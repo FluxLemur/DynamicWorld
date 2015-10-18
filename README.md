@@ -1,5 +1,4 @@
 # Dynamic Animal World
-Constance Nozière (cmn72), Leo Mehr (ljm262)
 
 ## Description
 We propose to simulate a world in which animals interact with each other and the available resources. The world is represented as a grid of cells, each defined by terrain (desert, plain, forest, mountain) and resources. Animals roam the world, eating, resting, and interacting amongst each other. Resources such as food and water will be contested by competing animals, and increase/decrease dynamically over time. We model the animals as rational agents, such that we can effectively program their behaviors and draw parallels to areas in Artificial Intelligence.
