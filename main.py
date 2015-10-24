@@ -58,11 +58,13 @@ class WorldControl:
         # Tile information
         cell_info = TileInfo(self.popup, [('Loc:', loc), ('Terrain:', cell.terrain)])
         cell_info.pack(side=TOP)
-        self.popup.title(loc)
 
         def key_callback(event):
             self.popup.destroy()
             self.popup = None
+
+        self.popup.title(loc)
+        self.popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))
         self.popup.bind("<Key>", key_callback)
 
     def _make_command_bar(self):
