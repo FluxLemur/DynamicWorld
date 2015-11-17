@@ -43,6 +43,7 @@ class WorldControl:
         self.popup = Tk()
 
         class TileInfo(Frame):
+            ''' This class simply governs the popup when you press on a tile '''
             def __init__(self,parent,info_text_pairs):
                 Frame.__init__(self, parent)
                 # forces the info window to not be too small
@@ -56,7 +57,8 @@ class WorldControl:
         loc = str(cell.row) + ', ' + str(cell.col)
 
         # Tile information
-        cell_info = TileInfo(self.popup, [('Loc:', loc), ('Terrain:', cell.terrain)])
+        cell_info = TileInfo(self.popup,
+                             [('Loc:', loc), ('Terrain:', cell.terrain)])
         cell_info.pack(side=TOP)
 
         def key_callback(event):

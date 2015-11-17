@@ -1,7 +1,7 @@
 from world import World
 
 class Display:
-    world_size = (10,10)  # world dimension
+    world_size = (10,10)    # world dimension
     cell_pixels = 50        # cell_pixelsels per cell
 
     # for colors, see http://wiki.tcl.tk/37701
@@ -11,13 +11,14 @@ class Display:
     def __init__(self, canvas):
         self.world = World(Display.world_size)
         self.canvas = canvas
+        self.world.randomly_populate_cells()
 
     def draw(self):
         i=0
         for row in self.world:
             j=0
             for cell in row:
-                color = self.terrain_colors[cell.terrain]
+                color = Display.terrain_colors[cell.terrain]
 
                 # top left coords
                 x0 = i * self.cell_pixels
