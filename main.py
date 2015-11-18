@@ -58,7 +58,8 @@ class WorldControl:
 
         # Tile information
         cell_info = TileInfo(self.popup,
-                             [('Loc:', loc), ('Terrain:', cell.terrain)])
+                    [('Loc:', loc), ('Terrain:', cell.terrain), ('Resources:', \
+                    cell.resources)])
         cell_info.pack(side=TOP)
 
         def key_callback(event):

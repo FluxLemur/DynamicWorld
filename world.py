@@ -1,18 +1,14 @@
 import random
 from sets import Set
-
-terrains = ['Plains', 'Forest', 'Desert', 'Mountain']
-
-def random_terrain():
-    return random.choice(terrains)
+from terrain import Terrain
 
 class Cell:
     ''' A cell has a type of terrain, and sets of resources and animals.
         This is equivalent to a NxN mile section of the simulated world, for
         some generalized N.'''
-    def __init__(self, terrain):
+    def __init__(self, terrain, resources):
         self.terrain = terrain
-        self.resources = Set()
+        self.resources = resources
         self.animals = Set()
         self.row = 0
         self.col = 0
@@ -22,6 +18,7 @@ class World:
         self.cells = [[None for x in range(size[0])] for x in range(size[1])]
         self.current = 0
         self.high = size[1]
+        self.terrain = Terrain()
 
     def __iter__(self):
         return self
@@ -29,7 +26,8 @@ class World:
     def randomly_populate_cells(self):
         for i in self.cells:
             for j in range(len(i)):
-                i[j] = Cell(random_terrain())
+                terrain = self.terrain.random_terrain()
+                i[j] = Cell(terrain[0], terrain[1])
 
     def next(self):
         if self.current >= self.high:

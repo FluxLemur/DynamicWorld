@@ -1,12 +1,9 @@
 from world import World
+from terrain import Terrain
 
 class Display:
     world_size = (10,10)    # world dimension
     cell_pixels = 50        # cell_pixelsels per cell
-
-    # for colors, see http://wiki.tcl.tk/37701
-    terrain_colors = {'Plains':'spring green', 'Forest':'forest green', \
-                   'Desert':'dark khaki', 'Mountain':'slate grey'}
 
     def __init__(self, canvas):
         self.world = World(Display.world_size)
@@ -18,7 +15,7 @@ class Display:
         for row in self.world:
             j=0
             for cell in row:
-                color = Display.terrain_colors[cell.terrain]
+                color = self.world.terrain.get_color(cell.terrain)
 
                 # top left coords
                 x0 = i * self.cell_pixels
