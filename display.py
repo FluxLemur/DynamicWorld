@@ -6,8 +6,8 @@ class Display:
     cell_pixels = 50        # cell_pixelsels per cell
 
     def __init__(self, canvas):
-        self.world = World(Display.world_size)
         self.canvas = canvas
+        self.world = World(Display.world_size)
         self.world.randomly_populate_cells()
 
     def draw(self):

@@ -15,7 +15,8 @@ class Cell:
 
 class World:
     def __init__(self, size):
-        self.cells = [[None for x in range(size[0])] for x in range(size[1])]
+        ''' [size]: (height, width) '''
+        self.cells = [[None for x in range(size[1])] for x in range(size[0])]
         self.current = 0
         self.high = size[1]
         self.terrain = Terrain()

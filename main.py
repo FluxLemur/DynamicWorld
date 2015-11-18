@@ -13,8 +13,6 @@ class WorldControl:
 
         self.canvas = Canvas(self.master, width=WIDTH, height=HEIGHT)
         self.canvas.pack(side=TOP)
-        self.stat_frame = Frame(self.master)
-        self.stat_frame.pack(side=BOTTOM)
         self.display = Display(self.canvas)
         self._make_command_bar()
         self.popup = None
@@ -74,8 +72,9 @@ class WorldControl:
         commands = Tk()
         commands.title('Commands')
         commands.bind("<Key>", self._key_callback)
-        Button(commands, text='help', width=25).grid(row=0, column=0)
-        Button(commands, text='play', width=25).grid(row=0, column=1)
+        Button(commands, text='help', width=15).grid(row=0, column=0)
+        Button(commands, text='play', width=15).grid(row=0, column=1)
+        Button(commands, text='step', width=15).grid(row=0, column=2)
 
 if __name__ == '__main__':
     world = WorldControl()
