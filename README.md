@@ -39,3 +39,6 @@ An animal is a rational agent in that it has:
 
 ## Onwards
 There are many possible additions to the project to make it more realistic and complex. One example, time permitting, is to implement the reproductive cycle, a prime opportunity for genetic algorithms!
+
+##Some Resources
+http://www.researchgate.net/publication/237332438_An_artificial_intelligence_modelling_approach_to_simulating_animalhabitat_interactions
