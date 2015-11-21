@@ -1,10 +1,10 @@
 from Tkinter import *
-from display import Display
+from world_control import WorldControl
 
 WIDTH = 500
 HEIGHT = 500
 
-class WorldControl:
+class ControlHub:
     def __init__(self):
         self.master = Tk()
         self.master.title('World')
@@ -13,17 +13,17 @@ class WorldControl:
 
         self.canvas = Canvas(self.master, width=WIDTH, height=HEIGHT)
         self.canvas.pack(side=TOP)
-        self.display = Display(self.canvas)
+        self.world_control = WorldControl(self.canvas)
         self._make_command_bar()
         self.popup = None
 
     def run(self):
-        ''' Print display and start the Tkinter mainloop '''
-        self.display.draw()
+        ''' Print world_control and start the Tkinter mainloop '''
+        self.world_control.draw()
         mainloop()
 
     def _click_callback(self,event):
-        cell = self.display.cell_at(event.x, event.y)
+        cell = self.world_control.cell_at(event.x, event.y)
         self._cell_info_popup(cell)
 
     def _key_callback(self,event):
@@ -33,7 +33,8 @@ class WorldControl:
         if press == "'\\x17'" or press == "'\\x11'":
             self.master.quit()
         else:
-            print press # TODO: remove this eventually
+            #print press # TODO: remove this eventually
+            pass
 
     def _cell_info_popup(self, cell):
         if self.popup:
@@ -57,7 +58,7 @@ class WorldControl:
         # Tile information
         cell_info = TileInfo(self.popup,
                     [('Loc:', loc), ('Terrain:', cell.terrain), ('Resources:', \
-                    cell.resources)])
+                    cell.resources_str())])
         cell_info.pack(side=TOP)
 
         def key_callback(event):
@@ -69,13 +70,28 @@ class WorldControl:
         self.popup.bind("<Key>", key_callback)
 
     def _make_command_bar(self):
+        step_str = StringVar(self.master)
+        step_str.set('0')
+        def _help():
+            pass
+        def _play():
+            pass
+        def _step():
+            self.world_control.step()
+            print step_str.get()
+
+            # for some reason this doesn't work
+            step_str.set(str(self.world_control.get_steps()))
+
         commands = Tk()
         commands.title('Commands')
         commands.bind("<Key>", self._key_callback)
-        Button(commands, text='help', width=15).grid(row=0, column=0)
-        Button(commands, text='play', width=15).grid(row=0, column=1)
-        Button(commands, text='step', width=15).grid(row=0, column=2)
+        Button(commands, text='help', width=15, command=_help).grid(row=0, column=0)
+        Button(commands, text='play', width=15, command=_play).grid(row=0, column=1)
+        Button(commands, text='step', width=15, command=_step).grid(row=0, column=2)
+        Label(commands, textvariable=step_str, width=15).grid(row=1, column=2)
+
 
 if __name__ == '__main__':
-    world = WorldControl()
+    world = ControlHub()
     world.run()

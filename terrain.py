@@ -1,23 +1,58 @@
 import random
+from collections import Counter
+from resources import Resources
 
-class Terrain:
+# Note: for colors, see http://wiki.tcl.tk/37701
+
+R = Resources
+
+class Terrain(object):
+    def __init__(self, color):
+        self.color = color
+        self.resources = {}
+
+    def get_color(self):
+        return self.color
+
+    def randomly_populate_resources(self):
+        for resource in self.resources.iterkeys():
+            self.resources[resource] = random.randint(3,10)
+
+    def resource_string(self):
+        res = ''
+        for resource,count in self.resources.iteritems():
+            res += '{}: {}\n'.format(resource, count)
+        return res
+
+    def __str__(self):
+        return type(self).__name__
+
+class Plains(Terrain):
     def __init__(self):
-      # for colors, see http://wiki.tcl.tk/37701
-      self.terrain_colors = {'Plains':'spring green', 'Forest':'forest green', \
-      'Desert':'gold', 'River':'light sky blue'}
-      self.terrain_resources = {'Plains': ['Water', 'Grass'], 'Desert':[], \
-      'Forest':['Trees', 'Leaves', 'Bugs'], 'River': ['Water', 'Fish']}
+        super(Plains,self).__init__('spring green')
+        self.resources = {R.water: 0, R.grass: 0}
 
-    def random_terrain(self):
-      t = random.sample(self.terrain_colors, 1)[0]
-      if self.terrain_resources[t] == []:
-        return(t, 'None')
-      else:
-        s = ''
-        for resource in self.terrain_resources[t]:
-          r = random.randint(3,10)
-          s += resource + ': ' + str(r) + '\n'
-        return [t,s]
+class Desert(Terrain):
+    def __init__(self):
+        super(Desert,self).__init__('gold')
+        self.resources = {R.water: 0, R.grass: 0}
 
-    def get_color(self, terrain):
-      return self.terrain_colors[terrain]
+class Forest(Terrain):
+    def __init__(self):
+        super(Forest,self).__init__('forest green')
+        self.resources = {R.trees: 0, R.leaves: 0, R.bugs: 0}
+
+class River(Terrain):
+    def __init__(self):
+        super(River,self).__init__('light sky blue')
+        self.resources = {R.water: 0, R.fish: 0}
+
+
+class Terrains:
+    terrains = [Plains, Desert, Forest, River]
+
+    @staticmethod
+    def random_terrain():
+        terrain = random.choice(Terrains.terrains)()
+        terrain.randomly_populate_resources()
+        return terrain
