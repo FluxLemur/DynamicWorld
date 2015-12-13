@@ -30,23 +30,22 @@ class Terrain(object):
 class Plains(Terrain):
     def __init__(self):
         super(Plains,self).__init__('spring green')
-        self.resources = {R.water: 0, R.grass: 0}
+        self.resources = {R.grass: 0}
 
 class Desert(Terrain):
     def __init__(self):
         super(Desert,self).__init__('gold')
-        self.resources = {R.water: 0, R.grass: 0}
+        self.resources = {}
 
 class Forest(Terrain):
     def __init__(self):
         super(Forest,self).__init__('forest green')
-        self.resources = {R.trees: 0, R.leaves: 0, R.bugs: 0}
+        self.resources = {R.fruit: 0, R.leaves: 0}
 
 class River(Terrain):
     def __init__(self):
         super(River,self).__init__('light sky blue')
         self.resources = {R.water: 0, R.fish: 0}
-
 
 class Terrains:
     terrains = [Plains, Desert, Forest, River]

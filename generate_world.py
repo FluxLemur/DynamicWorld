@@ -1,6 +1,6 @@
 import random
 import sys
-from terrain import Plains, Desert, Forest, River, Terrain
+from terrain import *
 
 # sys.argv[1] = height
 # sys.argv[2] = height

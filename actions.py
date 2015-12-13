@@ -10,6 +10,9 @@ class Eat(Action):
 class Sleep(Action):
     pass
 
+class Drink(Action):
+    pass
+
 class Direction:
     north = 0
     east  = 1
@@ -31,7 +34,7 @@ class Actions:
     move_south = Move(Direction.south)
     move_west  = Move(Direction.west)
     sleep      = Sleep()
-    actions = [Sleep, Eat, RandomMove]
+    actions = [Sleep, Drink, Eat, RandomMove]
 
     @staticmethod
     def random_action_cons():

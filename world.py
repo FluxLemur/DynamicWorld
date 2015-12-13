@@ -1,7 +1,7 @@
 import random
 import string
 from sets import Set
-from terrain import Plains, Desert, River, Forest, Terrains
+from terrain import *
 from actions import Actions
 
 class Cell:
@@ -9,7 +9,7 @@ class Cell:
         This is equivalent to a NxN mile section of the simulated world, for
         some generalized N.'''
     def __init__(self, terrain, resources):
-        self.terrain   = terrain
+        self.terrain   = terrain                #
         self.resources = resources
         self.animals   = Set()
         self.x = -1
@@ -80,11 +80,11 @@ class World:
                 row[j] = Cell.random_cell()
 
     def populate_cells(self):
-        f = open('world.txt', 'r')
+        f = open('world_config/world.txt', 'r')
         s = f.read()
         s = s.split()
         f.close()
-        f = open('resources.txt', 'r')
+        f = open('world_config/resources.txt', 'r')
         r = f.read()
         r = r.split(' \n')
         r = r[0:100]

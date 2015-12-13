@@ -1,8 +1,6 @@
 class Resources:
-    grass  = 'Grass'
-    water  = 'Water'
-    trees  = 'Tree'
-    leaves = 'Leaves'
-    bugs   = 'Bugs'
-    water  = 'Water'
-    fish   = 'Fish'
+    grass    = 'Grass'
+    fruit    = 'Fruit'
+    leaves   = 'Leaves'
+    water    = 'Water'
+    fish     = 'Fish'
