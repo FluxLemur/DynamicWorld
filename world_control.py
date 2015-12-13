@@ -8,7 +8,8 @@ class WorldControl:
     def __init__(self, canvas):
         self.canvas = canvas
         self.world = World(WorldControl.world_size)
-        self.world.randomly_populate_cells()
+        #self.world.randomly_populate_cells()
+        self.world.populate_cells()
 
     def draw(self):
         i=0

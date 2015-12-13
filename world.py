@@ -38,6 +38,21 @@ class Cell:
         terrain = Terrains.random_terrain()
         return Cell(terrain, terrain.resources)
 
+    @staticmethod
+    def from_int(i):
+        if i == 0:
+            terrain = Plains
+        elif i == 1:
+            terrain = Desert
+        elif i == 2:
+            terrain = Forest
+        else:
+            terrain = River
+
+        #need to fix this eep
+        #return Cell(terrain, terrain.resources)
+
+
 class World:
     def __init__(self, size):
         ''' [size]: (height, width) '''
@@ -60,6 +75,17 @@ class World:
         for row in self.cells:
             for j in range(len(row)):
                 row[j] = Cell.random_cell()
+
+    def populate_cells(self):
+        f = open('world.txt', 'r')
+        s = f.read()
+        s = s.split()
+        i = 0
+        for row in self.cells:
+            for j in range(len(row)):
+                row[j] = Cell.from_int(int(s[i]))
+                i += 1
+        #pass
 
     def next(self):
         if self.current >= self.high:
