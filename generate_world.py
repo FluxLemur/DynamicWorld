@@ -1,16 +1,33 @@
 import random
 import sys
+from terrain import Plains, Desert, Forest, River, Terrain
 
 # sys.argv[1] = height
 # sys.argv[2] = height
 
 def generate_world(height, width):
-  f = open('world.txt', 'w')
+  f1 = open('world.txt', 'w')
+  f2 = open('resources.txt', 'w')
   for x in range(width):
     for y in range(height):
       r = random.randint(0,3)     # index into terrain
-      f.write(str(r) + ' ')
-    f.write('\n')
-  f.close()
+      if r == 0:
+        terrain = Plains()
+      elif r == 1:
+        terrain = Desert()
+      elif r == 2:
+        terrain = Forest()
+      else:
+        terrain = River()
 
-#generate_world(int(sys.argv[1]), int(sys.argv[2]))
+      terrain.randomly_populate_resources()
+      f1.write(str(r) + ' ')
+      for resource in terrain.resources.iterkeys():
+        f2.write(str(random.randint(3, 10)) + ' ')
+      f2.write('\n')
+
+    f1.write('\n')
+  f1.close()
+  f2.close()
+
+generate_world(int(sys.argv[1]), int(sys.argv[2]))

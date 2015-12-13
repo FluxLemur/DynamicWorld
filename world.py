@@ -1,7 +1,7 @@
 import random
 import string
 from sets import Set
-from terrain import Terrains
+from terrain import Plains, Desert, River, Forest, Terrains
 from actions import Actions
 
 class Cell:
@@ -39,19 +39,22 @@ class Cell:
         return Cell(terrain, terrain.resources)
 
     @staticmethod
-    def from_int(i):
+    def from_int(i, resources):
         if i == 0:
-            terrain = Plains
+            terrain = Plains()
         elif i == 1:
-            terrain = Desert
+            terrain = Desert()
         elif i == 2:
-            terrain = Forest
+            terrain = Forest()
         else:
-            terrain = River
+            terrain = River()
 
-        #need to fix this eep
-        #return Cell(terrain, terrain.resources)
-
+        # populate cell
+        n = 0
+        for resource in terrain.resources.iterkeys():
+            terrain.resources[resource] = resources[n]
+            n += 1
+        return Cell(terrain, terrain.resources)
 
 class World:
     def __init__(self, size):
@@ -80,12 +83,18 @@ class World:
         f = open('world.txt', 'r')
         s = f.read()
         s = s.split()
+        f.close()
+        f = open('resources.txt', 'r')
+        r = f.read()
+        r = r.split(' \n')
+        r = r[0:100]
         i = 0
         for row in self.cells:
             for j in range(len(row)):
-                row[j] = Cell.from_int(int(s[i]))
+                resources = r[i].strip().split(' ')
+                row[j] = Cell.from_int(int(s[i]), resources)
                 i += 1
-        #pass
+        f.close()
 
     def next(self):
         if self.current >= self.high:
