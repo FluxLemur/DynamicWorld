@@ -1,3 +1,3 @@
 #! /bin/bash
 
-python -B main.py
+python -B main.py --no_images

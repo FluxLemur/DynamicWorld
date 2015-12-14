@@ -12,16 +12,9 @@ def generate_world(height, width):
   for x in range(width):
     for y in range(height):
       r = random.randint(0,3)     # index into terrain
-      if r == 0:
-        terrain = Plains()
-      elif r == 1:
-        terrain = Desert()
-      elif r == 2:
-        terrain = Forest()
-      else:
-        terrain = River()
-
+      terrain = Terrains.terrains[r]()
       terrain.randomly_populate_resources()
+
       f1.write(str(r) + ' ')
       for resource in terrain.resources.iterkeys():
         f2.write(str(random.randint(3, 10)) + ' ')
@@ -30,5 +23,6 @@ def generate_world(height, width):
     f1.write('\n')
   f1.close()
   f2.close()
+  f3.close()
 
 generate_world(int(sys.argv[1]), int(sys.argv[2]))

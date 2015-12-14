@@ -20,17 +20,25 @@ class Cell:
 
     def step(self):
         ''' change resources, step all animals in cell '''
+        self.step_resources()
+        self.step_animals()
+
+    def step_resources(self):
+        for resrouce in self.resources:
+            pass
+
+    def step_animals(self):
         anim_to_remove = [] # dictionary cannot change size during iteration
-                            # so we keep track of all the animals we have to remove
-                            # at the end
+                            # so we keep track of all the animals we have to
+                            # remove at the end
         for animal in self.animals:
             action = animal.act()
             if type(action) is Move or type(action) is RandomMove:
                 anim = self.move_animal(animal, action.direction)
                 if anim:
                     anim_to_remove.append(anim)
-                #pass
             elif type(action) is Drink:
+
                 pass
             elif type(action) is Eat:
                 pass
@@ -39,6 +47,7 @@ class Cell:
 
         for anim in anim_to_remove:
             self.animals.remove(anim)
+
 
     def move_animal(self, animal, direction):
         assert (animal in self.animals)
@@ -64,7 +73,7 @@ class Cell:
         animal.cell = self
         self.animals.add(animal)
 
-    def draw(self, canvas, x0, y0, x1, y1):
+    def draw(self, canvas, x0, y0, x1, y1, use_images=True):
         ''' Draws this cell on a given canvas in an area defined by the rectangle
             (x0,y0), (x1,y1) '''
         canvas.create_rectangle(x0, y0, x1, y1, fill=self.terrain.get_color(), outline='black')
@@ -73,10 +82,12 @@ class Cell:
         l = len(self.animals)
         i = 0
         for animal in self.animals:
-            photo = ImageTk.PhotoImage(animal.photo)
-            canvas.create_image(x0+dx/2, y0+dy/2, image=photo)
-            self.photo = photo
-            #canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
+            if use_images:
+                photo = ImageTk.PhotoImage(animal.photo)
+                canvas.create_image(x0+dx/2, y0+dy/2, image=photo)
+                self.photo = photo
+            else:
+                canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
             i += 1
 
     def resources_str(self):

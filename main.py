@@ -6,7 +6,7 @@ WIDTH  = CELL_PIXELS * WORLD_SIZE[0]
 HEIGHT = CELL_PIXELS * WORLD_SIZE[1]
 
 class ControlHub:
-    def __init__(self):
+    def __init__(self, use_images):
         self.master = Tk()
         self.master.title('World')
         self.master.bind("<Button-1>", self._click_callback)
@@ -14,7 +14,7 @@ class ControlHub:
 
         self.canvas = Canvas(self.master, width=WIDTH, height=HEIGHT)
         self.canvas.pack(side=TOP)
-        self.world_control = WorldControl(self.canvas)
+        self.world_control = WorldControl(self.canvas, use_images)
         self._make_command_bar()
         self.popup = None
 
@@ -98,5 +98,8 @@ class ControlHub:
         Button(commands, text='step', width=15, command=_step).grid(row=0, column=2)
 
 if __name__ == '__main__':
-    world = ControlHub()
+    use_images = True
+    if len(sys.argv) >= 2 and sys.argv[1] in ['--no_images', '-n']:
+        use_images = False
+    world = ControlHub(use_images)
     world.run()

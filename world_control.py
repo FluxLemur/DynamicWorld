@@ -6,11 +6,12 @@ class WorldControl:
     world_size = WORLD_SIZE         # world dimension
     cell_pixels = CELL_PIXELS       # pixels per cell
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, use_images=True):
         self.canvas = canvas
         self.world = World(WorldControl.world_size)
         #self.world.randomly_populate_cells()
         self.world.populate_cells()
+        self.use_images = use_images
 
     def draw(self):
         i=0
@@ -25,7 +26,7 @@ class WorldControl:
                 x1 = (i+1)*self.cell_pixels
                 y1 = (j+1)*self.cell_pixels
 
-                cell.draw(self.canvas, x0, y0, x1, y1)
+                cell.draw(self.canvas, x0, y0, x1, y1, self.use_images)
                 cell.row = i
                 cell.col = j
                 j+=1
