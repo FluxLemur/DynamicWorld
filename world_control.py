@@ -14,6 +14,7 @@ class WorldControl:
         self.use_images = use_images
 
     def draw(self):
+        self.canvas.delete('all')
         i=0
         for row in self.world:
             j=0

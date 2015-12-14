@@ -65,8 +65,9 @@ class ControlHub:
         cell_info.pack(side=TOP)
 
         def key_callback(event):
-            self.popup.destroy()
-            self.popup = None
+            if event and repr(event.char) == "'\\x1b'" or event is None:
+                self.popup.destroy()
+                self.popup = None
 
         self.popup.title(loc)
         self.popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))

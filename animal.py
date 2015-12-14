@@ -73,35 +73,38 @@ class Animal(object):
 
         return action_cons()
 
+# Wawa, when we have a lot of animals, starting the code takes a long one since
+# each one has to resize
+
+elephant = Image.open('elephant.png')
+elephant = elephant.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+
+tiger = Image.open('tiger.png')
+tiger = tiger.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+
+giraffe = Image.open('giraffe.png')
+giraffe = giraffe.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+
 class Elephant(Animal):
     def __init__(self, world):
         super(Elephant,self).__init__(world, Diet.herbivore)
         self.prey = []
         self.color = 'Purple'
-        original = Image.open('elephant.png')
-        delta = CELL_PIXELS
-        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
-        self.photo = resized
+        self.photo = elephant
 
 class Tiger(Animal):
     def __init__(self, world):
         super(Tiger,self).__init__(world, Diet.carnivore)
         self.prey = ['Elephant', 'Giraffe']
         self.color = 'Orange'
-        original = Image.open('tiger.png')
-        delta = CELL_PIXELS
-        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
-        self.photo = resized
+        self.photo = tiger
 
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.prey = []
         self.color = 'Yellow'
-        original = Image.open('giraffe.png')
-        delta = CELL_PIXELS
-        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
-        self.photo = resized
+        self.photo = giraffe
 
 class Animals:
     animals = [Giraffe, Elephant, Tiger]
