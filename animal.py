@@ -1,12 +1,13 @@
 import random
 from actions import *
+from resources import Resources as R
 
 class Diet:
-    herbivore = [grass, fruit, leaves]
+    herbivore = [R.grass, R.fruit, R.leaves]
     carnivore = []
-    omnivore  = [fish, grass, fruit, leaves]
+    omnivore  = [R.fish, R.grass, R.fruit, R.leaves]
 
-class Animal:
+class Animal(object):
     def __init__(self, world, diet):
         self.world = world
         self.diet = diet
@@ -54,7 +55,7 @@ class Animal:
             return Sleep()
 
         elif action_cons == Drink:
-            if self.cell.contains_resource(water):
+            if self.cell.contains_resource(R.water):
                 self.update_thirst()
                 return Drink()
             else:      # no water to drink - sleep instead
@@ -85,3 +86,6 @@ class Giraffe(Animal):
         self.prey = []
         self.color = 'Yellow'
         #self.precepts =
+
+class Animals:
+    animals = [Giraffe, Elephant, Tiger]

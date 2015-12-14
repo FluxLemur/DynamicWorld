@@ -3,6 +3,7 @@ import string
 from sets import Set
 from terrain import *
 from actions import *
+from animal import Animals
 
 class Cell:
     ''' A cell has a type of terrain, and sets of resources and animals.
@@ -21,11 +22,14 @@ class Cell:
             action = animal.act()
             if type(action) is Move:
                 self.move_animal(animal, action)
-            elif type(action) == type(Actions.Sleep):
-                kgt
+            elif type(action) == type(Sleep):
+                pass
 
     def move_animal(self, animal, direction):
         d_row, d_col = Direction.get_tuple(direction)
+
+    def contains_resource(self, r):
+        return r in self.resources
 
     def animals_str(self):
         ret_str = ''
@@ -34,6 +38,7 @@ class Cell:
         return ret_str
 
     def add_animal(self, animal):
+        animal.cell = self
         self.animals.add(animal)
 
     def draw(self, canvas, x0, y0, x1, y1):
@@ -59,15 +64,17 @@ class Cell:
         return Cell(terrain, terrain.resources, world, coord)
 
     @staticmethod
-    def from_int(i, resources, world, coord):
+    def from_int(i, resources, animals, world, coord):
         terrain = Terrains.terrains[i]()
-
         # populate cell
         n = 0
         for resource in terrain.resources.iterkeys():
             terrain.resources[resource] = resources[n]
             n += 1
-        return Cell(terrain, terrain.resources, world, coord)
+        cell = Cell(terrain, terrain.resources, world, coord)
+        for a in animals:
+            cell.add_animal(a)
+        return cell
 
 class World:
     def __init__(self, size):
@@ -93,21 +100,27 @@ class World:
                 row[j] = Cell.random_cell(self, (row, j))
 
     def populate_cells(self):
-        f = open('world_config/world.txt', 'r')
-        s = f.read()
+        f_world = open('world_config/world.txt', 'r')
+        s = f_world.read()
         s = s.split()
-        f.close()
-        f = open('world_config/resources.txt', 'r')
-        r = f.read()
-        r = r.split(' \n')
-        r = r[0:100]
+        f_world.close()
+        f_res = open('world_config/resources.txt', 'r')
+        r = f_res.read().strip().split(' \n')
+        f_res.close()
+        f_anim = open('world_config/animals.txt', 'r')
+        anim = f_anim.read().strip().split('\n')
+        f_anim.close()
         i = 0
         for row in self.cells:
             for j in range(len(row)):
                 resources = r[i].strip().split(' ')
-                row[j] = Cell.from_int(int(s[i]), resources, self, (row, j))
+                animal_i = int(anim[i])
+                animals = []
+                if animal_i != 0:
+                    animals.append(Animals.animals[i-1](self))
+
+                row[j] = Cell.from_int(int(s[i]), resources, animals, self, (row, j))
                 i += 1
-        f.close()
 
     def next(self):
         if self.current >= self.high:

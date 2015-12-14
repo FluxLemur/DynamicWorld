@@ -42,11 +42,11 @@ class RandomMove(Move):
         super(RandomMove,self).__init__(self, random.choice(Directions.directions))
 
 class Actions:
-    actions    = [Sleep, Drink, Eat, RandomMove]
+    actions = [Sleep, Drink, Eat, RandomMove]
 
     @staticmethod
     def random_action_cons():
-        a = random.choice(actions)
+        a = random.choice(Actions.actions)
         if type(a) == list:
             return random.choice(a)
         else:

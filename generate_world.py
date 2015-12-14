@@ -8,6 +8,7 @@ from terrain import *
 def generate_world(height, width):
   f1 = open('world.txt', 'w')
   f2 = open('resources.txt', 'w')
+  f3 = open('animals.txt', 'w')
   for x in range(width):
     for y in range(height):
       r = random.randint(0,3)     # index into terrain
