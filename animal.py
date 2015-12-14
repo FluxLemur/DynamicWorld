@@ -10,7 +10,7 @@ class Animal:
     def __init__(self, world, diet):
         self.world = world
         self.diet = diet
-
+        self.color = 'Black'
         self.hunger = 0             # hunger level (0 - 10 scale)
         self.energy = 10            # energy level (0 - 10 scale)
         self.thirst = 0             # thirst leve (0 - 10 scale)
@@ -69,16 +69,19 @@ class Elephant(Animal):
     def __init__(self, world):
         super(Elephant,self).__init__(world, Diet.herbivore)
         self.prey = []
+        self.color = 'Purple'
         #self.precepts =
 
 class Tiger(Animal):
     def __init__(self, world):
         super(Tiger,self).__init__(world, Diet.carnivore)
         self.prey = ['Elephant', 'Giraffe']
+        self.color = 'Orange'
         #self.precepts =
 
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.prey = []
+        self.color = 'Yellow'
         #self.precepts =

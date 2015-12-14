@@ -2,23 +2,36 @@ import random
 import string
 from sets import Set
 from terrain import *
-from actions import Actions
+from actions import *
 
 class Cell:
     ''' A cell has a type of terrain, and sets of resources and animals.
         This is equivalent to a NxN mile section of the simulated world, for
         some generalized N.'''
-    def __init__(self, terrain, resources):
-        self.terrain   = terrain                #
+    def __init__(self, terrain, resources, world, coord):
+        self.terrain   = terrain
         self.resources = resources
         self.animals   = Set()
-        self.x = -1
-        self.y = -1
+        self.world     = world
+        self.row, self.col = coord
 
     def step(self):
         ''' change resources, step all animals in cell '''
         for animal in self.animals:
             action = animal.act()
+            if type(action) is Move:
+                self.move_animal(animal, action)
+            elif type(action) == type(Actions.Sleep):
+                kgt
+
+    def move_animal(self, animal, direction):
+        d_row, d_col = Direction.get_tuple(direction)
+
+    def animals_str(self):
+        ret_str = ''
+        for animal in self.animals:
+            ret_str += type(animal).__name__ + ' '
+        return ret_str
 
     def add_animal(self, animal):
         self.animals.add(animal)
@@ -27,6 +40,13 @@ class Cell:
         ''' Draws this cell on a given canvas in an area defined by the rectangle
             (x0,y0), (x1,y1) '''
         canvas.create_rectangle(x0, y0, x1, y1, fill=self.terrain.get_color(), outline='black')
+        dx = x1-x0
+        dy = y1-y0
+        l = len(self.animals)
+        i = 0
+        for animal in self.animals:
+            canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
+            i += 1
 
     def resources_str(self):
         return '[{}]'.format(
@@ -34,27 +54,20 @@ class Cell:
                     )
 
     @staticmethod
-    def random_cell():
+    def random_cell(world, coord):
         terrain = Terrains.random_terrain()
-        return Cell(terrain, terrain.resources)
+        return Cell(terrain, terrain.resources, world, coord)
 
     @staticmethod
-    def from_int(i, resources):
-        if i == 0:
-            terrain = Plains()
-        elif i == 1:
-            terrain = Desert()
-        elif i == 2:
-            terrain = Forest()
-        else:
-            terrain = River()
+    def from_int(i, resources, world, coord):
+        terrain = Terrains.terrains[i]()
 
         # populate cell
         n = 0
         for resource in terrain.resources.iterkeys():
             terrain.resources[resource] = resources[n]
             n += 1
-        return Cell(terrain, terrain.resources)
+        return Cell(terrain, terrain.resources, world, coord)
 
 class World:
     def __init__(self, size):
@@ -77,7 +90,7 @@ class World:
     def randomly_populate_cells(self):
         for row in self.cells:
             for j in range(len(row)):
-                row[j] = Cell.random_cell()
+                row[j] = Cell.random_cell(self, (row, j))
 
     def populate_cells(self):
         f = open('world_config/world.txt', 'r')
@@ -92,7 +105,7 @@ class World:
         for row in self.cells:
             for j in range(len(row)):
                 resources = r[i].strip().split(' ')
-                row[j] = Cell.from_int(int(s[i]), resources)
+                row[j] = Cell.from_int(int(s[i]), resources, self, (row, j))
                 i += 1
         f.close()
 

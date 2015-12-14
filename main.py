@@ -33,7 +33,7 @@ class ControlHub:
         if press == "'\\x17'" or press == "'\\x11'":
             self.master.quit()
         else:
-            #print press # TODO: remove this eventually
+            print press # TODO: remove this eventually
             pass
 
     def _cell_info_popup(self, cell):
@@ -58,7 +58,7 @@ class ControlHub:
         # Tile information
         cell_info = TileInfo(self.popup,
                     [('Loc:', loc), ('Terrain:', cell.terrain), ('Resources:', \
-                    cell.resources_str())])
+                            cell.resources_str()), ('Animals:', cell.animals_str())])
         cell_info.pack(side=TOP)
 
         def key_callback(event):

@@ -20,6 +20,19 @@ class Direction:
     west  = 3
     directions = [north, east, south, west]
 
+    @staticmethod
+    def get_tuple(direction):
+        ''' Returns the direction tuple in a grid with (0,0) at the top left,
+            (horizontal, vertical) orientation '''
+        if direction == north:
+            return (-1,0)
+        elif direction == south:
+            return (1,0)
+        elif direction == east:
+            return (0,1)
+        elif direction == west:
+            return (0,-1)
+
 class Move(Action):
     def __init__(self, direction):
         self.direction = direction
@@ -29,12 +42,7 @@ class RandomMove(Move):
         super(RandomMove,self).__init__(self, random.choice(Directions.directions))
 
 class Actions:
-    move_north = Move(Direction.north)
-    move_east  = Move(Direction.east)
-    move_south = Move(Direction.south)
-    move_west  = Move(Direction.west)
-    sleep      = Sleep()
-    actions = [Sleep, Drink, Eat, RandomMove]
+    actions    = [Sleep, Drink, Eat, RandomMove]
 
     @staticmethod
     def random_action_cons():
