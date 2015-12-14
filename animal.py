@@ -39,6 +39,9 @@ class Animal(object):
         else:
             self.energy += 2
 
+    def get_name(self):
+        return type(self).__name__
+
     # choose an action
     def act(self):
         # randomly select an action

@@ -4,6 +4,7 @@ from sets import Set
 from terrain import *
 from actions import *
 from animal import Animals
+from PIL import Image, ImageTk
 
 class Cell:
     ''' A cell has a type of terrain, and sets of resources and animals.
@@ -15,6 +16,7 @@ class Cell:
         self.animals   = Set()
         self.world     = world
         self.row, self.col = coord
+        self.photo = None
 
     def step(self):
         ''' change resources, step all animals in cell '''
@@ -50,13 +52,19 @@ class Cell:
         l = len(self.animals)
         i = 0
         for animal in self.animals:
-            canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
+            name = animal.get_name().lower()
+            original = Image.open(name + '.png')
+            resized = original.resize((dx/2, dy/2),Image.ANTIALIAS)
+            photo = ImageTk.PhotoImage(resized)
+            canvas.create_image(dx/2, dy/2, image= photo)
+            self.photo = photo
+            #canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
             i += 1
 
     def resources_str(self):
         return '[{}]'.format(
-                    '\n'.join(['{} {}'.format(v,k) for k,v in self.resources.iteritems()])
-                    )
+                '\n'.join(['{} {}'.format(v,k) for k,v in self.resources.iteritems()])
+                )
 
     @staticmethod
     def random_cell(world, coord):
@@ -101,11 +109,10 @@ class World:
 
     def populate_cells(self):
         f_world = open('world_config/world.txt', 'r')
-        s = f_world.read()
-        s = s.split()
+        world = f_world.read().split()
         f_world.close()
         f_res = open('world_config/resources.txt', 'r')
-        r = f_res.read().strip().split(' \n')
+        res = f_res.read().strip().split(' \n')
         f_res.close()
         f_anim = open('world_config/animals.txt', 'r')
         anim = f_anim.read().strip().split('\n')
@@ -113,13 +120,12 @@ class World:
         i = 0
         for row in self.cells:
             for j in range(len(row)):
-                resources = r[i].strip().split(' ')
+                resources = res[i].strip().split(' ')
                 animal_i = int(anim[i])
                 animals = []
                 if animal_i != 0:
                     animals.append(Animals.animals[i-1](self))
-
-                row[j] = Cell.from_int(int(s[i]), resources, animals, self, (row, j))
+                row[j] = Cell.from_int(int(world[i]), resources, animals, self, (row, j))
                 i += 1
 
     def next(self):
