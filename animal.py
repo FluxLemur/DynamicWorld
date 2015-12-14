@@ -1,6 +1,8 @@
 import random
 from actions import *
 from resources import Resources as R
+from constance import *
+from PIL import Image
 
 class Diet:
     herbivore = [R.grass, R.fruit, R.leaves]
@@ -76,21 +78,30 @@ class Elephant(Animal):
         super(Elephant,self).__init__(world, Diet.herbivore)
         self.prey = []
         self.color = 'Purple'
-        #self.precepts =
+        original = Image.open('elephant.png')
+        delta = CELL_PIXELS
+        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
+        self.photo = resized
 
 class Tiger(Animal):
     def __init__(self, world):
         super(Tiger,self).__init__(world, Diet.carnivore)
         self.prey = ['Elephant', 'Giraffe']
         self.color = 'Orange'
-        #self.precepts =
+        original = Image.open('tiger.png')
+        delta = CELL_PIXELS
+        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
+        self.photo = resized
 
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.prey = []
         self.color = 'Yellow'
-        #self.precepts =
+        original = Image.open('giraffe.png')
+        delta = CELL_PIXELS
+        resized = original.resize((delta/2, delta/2),Image.ANTIALIAS)
+        self.photo = resized
 
 class Animals:
     animals = [Giraffe, Elephant, Tiger]
