@@ -1,12 +1,14 @@
 import random
 from actions import *
+from resources import Resources
 
 class Diet:
-    herbivore = [grass, fruit, leaves]
+    R = Resources
+    herbivore = [R.grass, R.fruit, R.leaves]
     carnivore = []
-    omnivore  = [fish, grass, fruit, leaves]
+    omnivore  = [R.fish, R.grass, R.fruit, R.leaves]
 
-class Animal:
+class Animal(object):
     def __init__(self, world, diet):
         self.world = world
         self.diet = diet
@@ -82,3 +84,6 @@ class Giraffe(Animal):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.prey = []
         #self.precepts =
+
+class Animals:
+    animals = [Giraffe, Elephant, Tiger]
