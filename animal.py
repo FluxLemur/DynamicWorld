@@ -69,6 +69,8 @@ class Animal(object):
             self.update_energy()
             return Sleep()
 
+        return action_cons()
+
 class Elephant(Animal):
     def __init__(self, world):
         super(Elephant,self).__init__(world, Diet.herbivore)

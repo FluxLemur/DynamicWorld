@@ -1,6 +1,6 @@
 import random
 
-class Action:
+class Action(object):
     pass
 
 class Eat(Action):
@@ -24,13 +24,13 @@ class Direction:
     def get_tuple(direction):
         ''' Returns the direction tuple in a grid with (0,0) at the top left,
             (horizontal, vertical) orientation '''
-        if direction == north:
+        if direction == Direction.north:
             return (-1,0)
-        elif direction == south:
+        elif direction == Direction.south:
             return (1,0)
-        elif direction == east:
+        elif direction == Direction.east:
             return (0,1)
-        elif direction == west:
+        elif direction == Direction.west:
             return (0,-1)
 
 class Move(Action):
@@ -39,7 +39,7 @@ class Move(Action):
 
 class RandomMove(Move):
     def __init__(self):
-        super(RandomMove,self).__init__(self, random.choice(Directions.directions))
+        super(RandomMove,self).__init__(random.choice(Direction.directions))
 
 class Actions:
     actions = [Sleep, Drink, Eat, RandomMove]

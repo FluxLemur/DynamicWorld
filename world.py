@@ -20,15 +20,36 @@ class Cell:
 
     def step(self):
         ''' change resources, step all animals in cell '''
+        anim_to_remove = [] # dictionary cannot change size during iteration
+                            # so we keep track of all the animals we have to remove
+                            # at the end
         for animal in self.animals:
             action = animal.act()
-            if type(action) is Move:
-                self.move_animal(animal, action)
-            elif type(action) == type(Sleep):
+            if type(action) is Move or type(action) is RandomMove:
+                anim = self.move_animal(animal, action.direction)
+                if anim:
+                    anim_to_remove.append(anim)
+                #pass
+            elif type(action) is Drink:
+                pass
+            elif type(action) is Eat:
+                pass
+            elif type(action) is Sleep:
                 pass
 
+        for anim in anim_to_remove:
+            self.animals.remove(anim)
+
     def move_animal(self, animal, direction):
+        assert (animal in self.animals)
         d_row, d_col = Direction.get_tuple(direction)
+        new_cell = self.world.get_relative_cell(self, d_row, d_col)
+
+        print 'moving animal!!'
+        if new_cell != self:
+            new_cell.add_animal(animal)
+            return animal
+        return None
 
     def contains_resource(self, r):
         return r in self.resources
@@ -56,7 +77,7 @@ class Cell:
             original = Image.open(name + '.png')
             resized = original.resize((dx/2, dy/2),Image.ANTIALIAS)
             photo = ImageTk.PhotoImage(resized)
-            canvas.create_image(dx/2, dy/2, image= photo)
+            canvas.create_image(x0+dx/2, y0+ dy/2, image= photo)
             self.photo = photo
             #canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
             i += 1
@@ -88,6 +109,8 @@ class World:
     def __init__(self, size):
         ''' [size]: (height, width) '''
         self.cells = [[None for x in range(size[1])] for x in range(size[0])]
+        self.rows = size[0]
+        self.cols = size[1]
         self.current = 0
         self.high = size[1]
         self.steps = 0
@@ -102,8 +125,21 @@ class World:
                 cell.step()
         self.steps += 1
 
+    def get_relative_cell(self, cell, d_row, d_col):
+        new_row = cell.row + d_row
+        new_col = cell.col + d_col
+        def adjust(dim, max_dim):
+            if dim < 0:
+                return 0
+            elif dim >= max_dim:
+                return max_dim - 1
+            return dim
+        new_row = adjust(new_row, self.rows)
+        new_col = adjust(new_col, self.cols)
+        return self.cells[new_row][new_col]
+
     def randomly_populate_cells(self):
-        for row in self.cells:
+        for row, i in zip(self.cells, xrange(len(self.cells))):
             for j in range(len(row)):
                 row[j] = Cell.random_cell(self, (row, j))
 
@@ -118,14 +154,14 @@ class World:
         anim = f_anim.read().strip().split('\n')
         f_anim.close()
         i = 0
-        for row in self.cells:
+        for row, row_i in zip(self.cells, xrange(len(self.cells))):
             for j in range(len(row)):
                 resources = res[i].strip().split(' ')
                 animal_i = int(anim[i])
                 animals = []
                 if animal_i != 0:
                     animals.append(Animals.animals[i-1](self))
-                row[j] = Cell.from_int(int(world[i]), resources, animals, self, (row, j))
+                row[j] = Cell.from_int(int(world[i]), resources, animals, self, (row_i, j))
                 i += 1
 
     def next(self):

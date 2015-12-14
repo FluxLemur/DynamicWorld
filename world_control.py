@@ -3,7 +3,7 @@ from terrain import Terrain
 
 class WorldControl:
     world_size = (10,10)    # world dimension
-    cell_pixels = 50        # cell_pixelsels per cell
+    cell_pixels = 50        # pixels per cell
 
     def __init__(self, canvas):
         self.canvas = canvas

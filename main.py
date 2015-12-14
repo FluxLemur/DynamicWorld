@@ -32,6 +32,8 @@ class ControlHub:
         # ctrl-w and ctrl-q respectively
         if press == "'\\x17'" or press == "'\\x11'":
             self.master.quit()
+        elif press == "'\\r'" or press == "' '":
+            self.step()
         else:
             print press # TODO: remove this eventually
             pass
@@ -69,19 +71,23 @@ class ControlHub:
         self.popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))
         self.popup.bind("<Key>", key_callback)
 
+    def step(self):
+        self.world_control.step()
+        print self.world_control.get_steps()
+        #print step_str.get()
+
+        # for some reason this doesn't work
+        #step_str.set(str(self.world_control.get_steps()))
+
     def _make_command_bar(self):
-        step_str = StringVar(self.master)
-        step_str.set('0')
+        #step_str = StringVar(self.master)
+        #step_str.set('0')
         def _help():
             pass
         def _play():
             pass
         def _step():
-            self.world_control.step()
-            print step_str.get()
-
-            # for some reason this doesn't work
-            step_str.set(str(self.world_control.get_steps()))
+            self.step()
 
         commands = Tk()
         commands.title('Commands')
@@ -89,8 +95,6 @@ class ControlHub:
         Button(commands, text='help', width=15, command=_help).grid(row=0, column=0)
         Button(commands, text='play', width=15, command=_play).grid(row=0, column=1)
         Button(commands, text='step', width=15, command=_step).grid(row=0, column=2)
-        Label(commands, textvariable=step_str, width=15).grid(row=1, column=2)
-
 
 if __name__ == '__main__':
     world = ControlHub()
