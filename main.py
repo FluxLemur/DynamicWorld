@@ -1,8 +1,9 @@
 from Tkinter import *
 from world_control import WorldControl
+from constance import *
 
-WIDTH = 500
-HEIGHT = 500
+WIDTH  = CELL_PIXELS * WORLD_SIZE[0]
+HEIGHT = CELL_PIXELS * WORLD_SIZE[1]
 
 class ControlHub:
     def __init__(self):
