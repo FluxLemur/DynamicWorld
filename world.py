@@ -4,7 +4,7 @@ from sets import Set
 from terrain import *
 from actions import *
 from animal import Animals
-from PIL import Image, ImageTk
+from PIL import ImageTk
 
 class Cell:
     ''' A cell has a type of terrain, and sets of resources and animals.
@@ -73,11 +73,8 @@ class Cell:
         l = len(self.animals)
         i = 0
         for animal in self.animals:
-            name = animal.get_name().lower()
-            original = Image.open(name + '.png')
-            resized = original.resize((dx/2, dy/2),Image.ANTIALIAS)
-            photo = ImageTk.PhotoImage(resized)
-            canvas.create_image(x0+dx/2, y0+ dy/2, image= photo)
+            photo = ImageTk.PhotoImage(animal.photo)
+            canvas.create_image(x0+dx/2, y0+dy/2, image=photo)
             self.photo = photo
             #canvas.create_rectangle(x0 + i*2, y0+5,x1+i*3, y1-5, fill=animal.color)
             i += 1

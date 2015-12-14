@@ -1,0 +1,1 @@
+CELL_PIXELS = 50

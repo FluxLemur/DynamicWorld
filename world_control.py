@@ -1,9 +1,10 @@
 from world import World
 from terrain import Terrain
+from constance import *
 
 class WorldControl:
-    world_size = (10,10)    # world dimension
-    cell_pixels = 50        # pixels per cell
+    world_size = (10,10)            # world dimension
+    cell_pixels = CELL_PIXELS       # pixels per cell
 
     def __init__(self, canvas):
         self.canvas = canvas
