@@ -160,7 +160,7 @@ class World:
                 animal_i = int(anim[i])
                 animals = []
                 if animal_i != 0:
-                    animals.append(Animals.animals[i-1](self))
+                    animals.append(Animals.animals[animal_i-1](self))
                 row[j] = Cell.from_int(int(world[i]), resources, animals, self, (row_i, j))
                 i += 1
 
