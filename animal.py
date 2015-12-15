@@ -44,6 +44,9 @@ class Animal(object):
 
         # animal has some internal rep. of the world
 
+    def f_fitness(self):        # fitness function
+        return self.energy - self.hunger - self.thirst - self.attacks * 2
+
     def eat(self):
         self.gain_thirst()
         self.last_eat = 0

@@ -2,6 +2,8 @@ import random
 import string
 from animal import Animals
 from cell import Cell
+from collections import OrderedDict
+from operator import itemgetter
 
 class World:
     def __init__(self, size):
@@ -12,6 +14,7 @@ class World:
         self.current = 0
         self.high = size[1]
         self.steps = 0
+        self.animals = []
 
     def __iter__(self):
         return self
@@ -52,10 +55,10 @@ class World:
         for row, row_i in zip(self.cells, xrange(len(self.cells))):
             for j in range(len(row)):
                 animal_i = int(anim[i])
-                animals = []
+                cell_animals = []
                 if animal_i != 0:
-                    animals.append(Animals.animals[animal_i-1](self))
-                row[j] = Cell.from_int(int(world[i]), animals, self, (row_i, j))
+                    cell_animals.append(Animals.animals[animal_i-1](self))
+                row[j] = Cell.from_int(int(world[i]), cell_animals, self, (row_i, j))
                 i += 1
 
     def next(self):
@@ -75,3 +78,36 @@ class World:
 
     def add_animal(self, x, y, animal):
         self.cells[x][y].add_animal(animal)
+
+    def roulette(self, sorted_fitness, dic):
+      r = random.randint(0, tot_fitness)
+      S = 0
+      i = 0
+      while S < r:
+        S += sorted_fitness[i]
+        i += 1
+      return dic[i-1]
+
+    def reproduce(self):
+      dic = {}
+      tot_fitness = 0
+      for animal in self.animals:
+        fitness = animal.f_fitness()
+        tot_fitness += fitness
+        d[fitness] = animal
+
+      if len(d) < 2:
+        return
+
+      sorted_fitness = sorted(dic.keys())
+
+      animal1 = self.roulette(sorted_fitness, dic)
+      animal2 = self.roulette(sorted_fitness, dic)
+      while animal2 == animal1:
+        self.roulette(sorted_fitness, dic)
+
+      # we have selected two inidividuals to reproduce
+
+      # crossover
+
+      # mutation
