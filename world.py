@@ -14,7 +14,7 @@ class World:
         self.current = 0
         self.high = size[1]
         self.steps = 0
-        self.animals = []
+        self.animals = set()
 
     def __iter__(self):
         return self
@@ -59,6 +59,7 @@ class World:
                 if animal_i != 0:
                     cell_animals.append(Animals.animals[animal_i-1](self))
                 row[j] = Cell.from_int(int(world[i]), cell_animals, self, (row_i, j))
+                self.animals.update(cell_animals)
                 i += 1
 
     def next(self):
@@ -111,3 +112,14 @@ class World:
       # crossover
 
       # mutation
+
+    def print_animal_stats(self):
+        print 'Animal, Steps survived'
+        for anim in self.animals:
+            print '{}, {}'.format(anim.get_name(), anim.last_step)
+
+    def all_dead(self):
+        for anim in self.animals:
+            if not anim.dead():
+                return False
+        return True

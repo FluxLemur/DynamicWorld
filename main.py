@@ -75,13 +75,14 @@ class ControlHub:
         self.info_popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))
         self.info_popup.bind("<Key>", key_callback)
 
-    def step(self):
-        self.world_control.step()
+    def step(self, draw=True):
+        self.world_control.step(draw=draw)
         print self.world_control.get_steps()
         #print step_str.get()
 
         # for some reason this doesn't work
         #step_str.set(str(self.world_control.get_steps()))
+
 
     def step_many(self):
         for i in xrange(N_STEPS-1):
@@ -96,15 +97,24 @@ class ControlHub:
         def _step_many():
             self.step_many()
 
+        def _step_until_done():
+            while not self.world_control.done:
+                self.step(False)
+
         commands = Tk()
         commands.title('Commands')
         commands.bind("<Key>", self._key_callback)
         Button(commands, text='step', width=15, command=_step).grid(row=0, column=0)
         Button(commands, text='step 100', width=15, command=_step_many).grid(row=0, column=1)
+        Button(commands, text='step until done', width=15,
+               command=_step_until_done).grid(row=0, column=2)
 
-if __name__ == '__main__':
+def main():
     use_images = True
     if len(sys.argv) >= 2 and sys.argv[1] in ['--no_images', '-n']:
         use_images = False
     world = ControlHub(use_images)
     world.run()
+
+if __name__ == '__main__':
+    main()

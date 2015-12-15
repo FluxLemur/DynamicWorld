@@ -1,1 +1,5 @@
-- update resources and make sure they come back after some period of time
+- collect stats about animals (avg survived steps per species)
+
+- animal internal world rep
+- searching in internal rep
+- genetic algorithms

@@ -20,10 +20,15 @@ class State:
     dead_thirst = range(5)
 
 class Animal(object):
+    n_animals = 0
+
     def __init__(self, world, diet):
         self.world = world
         self.diet = diet
         self.color = 'Black'
+        self.uid = Animal.n_animals
+        Animal.n_animals += 1
+
         self.conditions = set()     # empty set is healthy
         self.last_step = -1         # keeps track, so as not to move an animal
                                     # twice in one time step
@@ -36,6 +41,7 @@ class Animal(object):
         self.last_drink = 0
         self.last_sleep = 0
 
+        self.is_dead = False
         self.attacks = 0            # number of attacks the animal has been subject to
         self.cell = None            # the cell the animal is currently in
 
@@ -99,7 +105,7 @@ class Animal(object):
         return type(self).__name__
 
     def dead(self):
-        return self.hunger == MAX_STAT or self.thirst == MAX_STAT
+        return self.is_dead
 
     def death_cause(self):
         assert self.dead()
@@ -157,6 +163,9 @@ class Animal(object):
 
         return action
 
+    def update_state(self):
+          self.is_dead = self.hunger == MAX_STAT or self.thirst == MAX_STAT
+
     def do_action(self, action):
         if type(action) == Eat:
             self.eat()
@@ -180,6 +189,7 @@ class Animal(object):
             action = Sleep()
 
         self.do_action(action)
+        self.update_state()
         return action
 
 
