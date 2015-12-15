@@ -45,21 +45,17 @@ class World:
         f_world = open('world_config/world.txt', 'r')
         world = f_world.read().split()
         f_world.close()
-        f_res = open('world_config/resources.txt', 'r')
-        res = f_res.read().split('\n')
-        f_res.close()
         f_anim = open('world_config/animals.txt', 'r')
         anim = f_anim.read().split('\n')
         f_anim.close()
         i = 0
         for row, row_i in zip(self.cells, xrange(len(self.cells))):
             for j in range(len(row)):
-                resources = res[i].strip().split(' ')
                 animal_i = int(anim[i])
                 animals = []
                 if animal_i != 0:
                     animals.append(Animals.animals[animal_i-1](self))
-                row[j] = Cell.from_int(int(world[i]), resources, animals, self, (row_i, j))
+                row[j] = Cell.from_int(int(world[i]), animals, self, (row_i, j))
                 i += 1
 
     def next(self):

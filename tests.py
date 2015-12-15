@@ -15,6 +15,5 @@ class TestWorld(unittest.TestCase):
         w.randomly_populate_cells()
         [[self.assertIsNotNone(cell) for cell in row] for row in w.cells]
 
-
 suite = unittest.TestLoader().loadTestsFromTestCase(TestWorld)
 unittest.TextTestRunner(verbosity=2).run(suite)

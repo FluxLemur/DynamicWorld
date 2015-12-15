@@ -4,7 +4,7 @@ class Action(object):
     pass
 
 class Eat(Action):
-    def __init__(self, food):
+    def __init__(self, food=None):
         self.food = food
 
 class Sleep(Action):
@@ -34,20 +34,16 @@ class Direction:
             return (0,-1)
 
 class Move(Action):
-    def __init__(self, direction):
+    def __init__(self, direction=None):
         self.direction = direction
 
-class RandomMove(Move):
-    def __init__(self):
-        super(RandomMove,self).__init__(random.choice(Direction.directions))
-
 class Actions:
-    actions = [Sleep, Drink, Eat, RandomMove]
+    actions = [Sleep, Drink, Eat, Move]
 
     @staticmethod
-    def random_action_cons():
-        a = random.choice(Actions.actions)
-        if type(a) == list:
-            return random.choice(a)
+    def random_action():
+        A = random.choice(Actions.actions)
+        if A == Move:
+            return Move(random.choice(Direction.directions))
         else:
-            return a
+            return A()

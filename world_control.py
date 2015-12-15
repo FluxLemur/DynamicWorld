@@ -34,9 +34,10 @@ class WorldControl:
             i+=1
         self.canvas.pack()
 
-    def step(self):
+    def step(self, draw=True):
         self.world.step()
-        self.draw()
+        if draw:
+            self.draw()
 
     def get_steps(self):
         return self.world.steps

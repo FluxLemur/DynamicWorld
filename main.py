@@ -4,6 +4,7 @@ from constance import *
 
 WIDTH  = CELL_PIXELS * WORLD_SIZE[0]
 HEIGHT = CELL_PIXELS * WORLD_SIZE[1]
+N_STEPS = 100
 
 class ControlHub:
     def __init__(self, use_images):
@@ -16,7 +17,7 @@ class ControlHub:
         self.canvas.pack(side=TOP)
         self.world_control = WorldControl(self.canvas, use_images)
         self._make_command_bar()
-        self.popup = None
+        self.info_popup = None    # TODO: does this as a mouseover???
 
     def run(self):
         ''' Print world_control and start the Tkinter mainloop '''
@@ -35,14 +36,15 @@ class ControlHub:
             self.master.quit()
         elif press == "'\\r'" or press == "' '":
             self.step()
+        elif press == "'\\\\'":
+            self.step_many()
         else:
             print press # TODO: remove this eventually
-            pass
 
     def _cell_info_popup(self, cell):
-        if self.popup:
-            self.popup.destroy()
-        self.popup = Tk()
+        if self.info_popup:
+            self.info_popup.destroy()
+        self.info_popup = Tk()
 
         class TileInfo(Frame):
             ''' This class simply governs the popup when you press on a tile '''
@@ -59,19 +61,19 @@ class ControlHub:
         loc = str(cell.row) + ', ' + str(cell.col)
 
         # Tile information
-        cell_info = TileInfo(self.popup,
+        cell_info = TileInfo(self.info_popup,
                     [('Loc:', loc), ('Terrain:', cell.terrain), ('Resources:', \
                             cell.resources_str()), ('Animals:', cell.animals_str())])
         cell_info.pack(side=TOP)
 
         def key_callback(event):
             if event and repr(event.char) == "'\\x1b'" or event is None:
-                self.popup.destroy()
-                self.popup = None
+                self.info_popup.destroy()
+                self.info_popup = None
 
-        self.popup.title(loc)
-        self.popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))
-        self.popup.bind("<Key>", key_callback)
+        self.info_popup.title(loc)
+        self.info_popup.protocol("WM_DELETE_WINDOW", lambda : key_callback(None))
+        self.info_popup.bind("<Key>", key_callback)
 
     def step(self):
         self.world_control.step()
@@ -81,22 +83,24 @@ class ControlHub:
         # for some reason this doesn't work
         #step_str.set(str(self.world_control.get_steps()))
 
+    def step_many(self):
+        for i in xrange(N_STEPS-1):
+            self.world_control.step(draw=False)
+        self.step()
+
     def _make_command_bar(self):
         #step_str = StringVar(self.master)
         #step_str.set('0')
-        def _help():
-            pass
-        def _play():
-            pass
         def _step():
             self.step()
+        def _step_many():
+            self.step_many()
 
         commands = Tk()
         commands.title('Commands')
         commands.bind("<Key>", self._key_callback)
-        Button(commands, text='help', width=15, command=_help).grid(row=0, column=0)
-        Button(commands, text='play', width=15, command=_play).grid(row=0, column=1)
-        Button(commands, text='step', width=15, command=_step).grid(row=0, column=2)
+        Button(commands, text='step', width=15, command=_step).grid(row=0, column=0)
+        Button(commands, text='step 100', width=15, command=_step_many).grid(row=0, column=1)
 
 if __name__ == '__main__':
     use_images = True
