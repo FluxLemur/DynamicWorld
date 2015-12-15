@@ -23,6 +23,9 @@ class Animal(object):
 
         # animal has some internal rep. of the world
 
+    def f_fitness(self):        # fitness function
+        return self.energy - self.hunger - self.thirst - self.attacks * 2
+
     def update_hunger(self):
         if self.hunger < 2:
             self.hunger = 0
