@@ -21,6 +21,10 @@ class Direction:
     directions = [north, east, south, west]
 
     @staticmethod
+    def random_direction():
+        return random.choice(Direction.directions)
+
+    @staticmethod
     def get_tuple(direction):
         ''' Returns the direction tuple in a grid with (0,0) at the top left,
             (horizontal, vertical) orientation '''

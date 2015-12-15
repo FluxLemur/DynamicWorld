@@ -39,6 +39,9 @@ class Animal(object):
         self.attacks = 0            # number of attacks the animal has been subject to
         self.cell = None            # the cell the animal is currently in
 
+        # this function is the AI part of Animal
+        self.determine_action = self.random_determine_action
+
         # animal has some internal rep. of the world
 
     def eat(self):
@@ -110,13 +113,44 @@ class Animal(object):
                                  self.thirst, self.last_drink,
                                  self.energy, self.last_sleep)
 
-    def determine_action(self):
-        action = Actions.random_action()
-        if type(action) == Eat:
-            for food in self.diet:
-                if self.cell.contains_resource(food):
-                    action.food = food
+    def get_eat_action(self):
+        ''' tries to find food to eat, otherwise returns None '''
+        action = Eat()
+        for food in self.diet:
+            if self.cell.contains_resource(food):
+                action.food = food
+        if action.food == None:
+            return None
+        return action
 
+    def get_drink_action(self):
+        ''' tries to find water, otherwise returns None '''
+        if self.cell.contains_resource(R.water):
+            return Drink()
+        return None
+
+    def random_determine_action(self):
+        action = Actions.random_action()
+
+        if type(action) == Eat:
+            action = self.get_eat_action()
+            if action == None:
+                action = Sleep()
+
+        return action
+
+    def naive_determine_action(self):
+        action = None
+        if self.thirst > 1:
+            if self.hunger > self.thirst:
+                action = self.get_eat_action()
+            if action is None:
+                action = self.get_drink_action()
+        elif self.hunger > 1:
+            action = self.get_eat_action()
+
+        if action is None:
+            action = Move(Direction.random_direction())
 
         return action
 
@@ -164,6 +198,7 @@ class Elephant(Animal):
         self.prey = []
         self.color = 'Purple'
         self.photo = elephant
+        self.determine_action = self.naive_determine_action
 
 class Tiger(Animal):
     def __init__(self, world):
