@@ -61,7 +61,6 @@ class Cell:
             elif type(action) is Sleep:
                 pass
 
-
         for anim in anim_to_remove:
             self.animals.remove(anim)
 
@@ -88,7 +87,8 @@ class Cell:
         return '\n'.join(anim_strs)
 
     def add_animal(self, animal):
-        animal.cell = self
+        animal.current_cell = self
+        animal.cells[self.row][self.col] = self
         self.animals.add(animal)
 
     def draw(self, canvas, x0, y0, x1, y1, use_images=True):
@@ -115,8 +115,7 @@ class Cell:
     def resources_str(self):
         return '[{}]'.format(
                 '\n'.join(['{} {}'.format(v,k)
-                    for k,v in self.terrain.resources.iteritems()])
-                )
+                    for k,v in self.terrain.resources.iteritems()]))
 
     @staticmethod
     def random_cell(world, coord):

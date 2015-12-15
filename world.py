@@ -8,6 +8,7 @@ from operator import itemgetter
 class World:
     def __init__(self, size):
         ''' [size]: (height, width) '''
+        self.size = size
         self.cells = [[None for x in range(size[1])] for x in range(size[0])]
         self.rows = size[0]
         self.cols = size[1]

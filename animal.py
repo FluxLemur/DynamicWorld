@@ -42,16 +42,19 @@ class Animal(object):
         self.last_sleep = 0
 
         self.is_dead = False
-        self.attacks = 0            # number of attacks the animal has been subject to
-        self.cell = None            # the cell the animal is currently in
+        self.attacks = 0                                                            # number of attacks the animal has been subject to
+        self.current_cell = None                                                    # the cell the animal is currently in
+        height = world.size[0]
+        width = world.size[1]
+        self.cells = [[None for x in range(width)] for x in range(height)]
 
         # this function is the AI part of Animal
         self.determine_action = self.random_determine_action
 
         # animal has some internal rep. of the world
 
-    def f_fitness(self):        # fitness function
-        return self.energy - self.hunger - self.thirst - self.attacks * 2
+    #def f_fitness(self):        # fitness function
+    #    return self.energy - self.hunger - self.thirst - self.attacks * 2
 
     def eat(self):
         self.gain_thirst()
@@ -126,7 +129,7 @@ class Animal(object):
         ''' tries to find food to eat, otherwise returns None '''
         action = Eat()
         for food in self.diet:
-            if self.cell.contains_resource(food):
+            if self.current_cell.contains_resource(food):
                 action.food = food
         if action.food == None:
             return None
@@ -134,7 +137,7 @@ class Animal(object):
 
     def get_drink_action(self):
         ''' tries to find water, otherwise returns None '''
-        if self.cell.contains_resource(R.water):
+        if self.current_cell.contains_resource(R.water):
             return Drink()
         return None
 
@@ -183,7 +186,7 @@ class Animal(object):
     def act(self):
         action = self.determine_action()
 
-        if not self.cell.can_perform_action(action):
+        if not self.current_cell.can_perform_action(action):
             action = Sleep()
         if type(action) is Move and self.energy == 0:
             action = Sleep()
@@ -191,10 +194,6 @@ class Animal(object):
         self.do_action(action)
         self.update_state()
         return action
-
-
-# Wawa, when we have a lot of animals, starting the code takes a long one since
-# each one has to resize
 
 elephant = Image.open('elephant.png')
 elephant = elephant.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
@@ -216,7 +215,7 @@ class Elephant(Animal):
 class Tiger(Animal):
     def __init__(self, world):
         super(Tiger,self).__init__(world, Diet.carnivore)
-        self.prey = ['Elephant', 'Giraffe']
+        self.prey = [Elephant, Giraffe]
         self.color = 'Orange'
         self.photo = tiger
 
