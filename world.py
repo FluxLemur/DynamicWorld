@@ -50,7 +50,7 @@ class World:
         world = f_world.read().split()
         f_world.close()
         f_anim = open('world_config/animals.txt', 'r')
-        anim = f_anim.read().split('\n')
+        anim = f_anim.read().split()
         f_anim.close()
         i = 0
         for row, row_i in zip(self.cells, xrange(len(self.cells))):
@@ -117,7 +117,7 @@ class World:
     def print_animal_stats(self):
         print 'Animal, Steps survived'
         for anim in self.animals:
-            print '{}, {}'.format(anim.get_name(), anim.last_step)
+            print '{} {} {}'.format(anim.get_name(), anim.last_step, anim.death_cause)
 
     def all_dead(self):
         for anim in self.animals:

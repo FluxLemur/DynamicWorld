@@ -11,6 +11,11 @@ class Diet:
 MAX_STAT = 11
 STAT_INC = 2
 
+class DeathCause:
+    eaten = 'Eaten'
+    thirst = 'Thirst'
+    hunger = 'Hunger'
+
 class State:
     hungry,      \
     thirsty,     \
@@ -155,7 +160,7 @@ class Animal(object):
 
     def be_eaten(self):
         self.is_dead = True
-        self.death_cause = 'Being eaten'
+        self.death_cause = DeathCause.eaten
 
     def naive_determine_action(self):
         action = None
@@ -217,15 +222,12 @@ class Animal(object):
 
     def update_state(self):
         if not self.is_dead:
-            if self.hunger == MAX_STAT and self.thirst == MAX_STAT:
+            if self.thirst == MAX_STAT:
                 self.is_dead = True
-                self.death_cause = 'Thirst and Hunger'
+                self.death_cause = DeathCause.thirst
             elif self.hunger == MAX_STAT:
                 self.is_dead = True
-                self.death_cause = 'Hunger'
-            elif self.thirst == MAX_STAT:
-                self.is_dead = True
-                self.death_cause = 'Thirst'
+                self.death_cause = DeathCause.hunger
 
     def do_action(self, action):
         if type(action) == Eat:

@@ -1,26 +1,58 @@
 import matplotlib.pyplot as plt
+from matplotlib.ticker import IndexLocator
 import numpy as np
+from scipy.stats import sem
+from animal import DeathCause as DC
 
-anim_steps = {'Tiger':[], 'Giraffe':[], 'Elephant':[]}
-with open('data/superior_elephant.txt') as f:
+data_file = 'data/large_world_1.txt'
+
+survivals = {'Tiger':[], 'Giraffe':[], 'Elephant':[]}
+
+causes = {DC.hunger: 0, DC.eaten: 0, DC.thirst:0}
+death_causes = {'Tiger':causes.copy(), 'Giraffe':causes.copy(), 'Elephant':causes.copy()}
+
+with open(data_file) as f:
     for line in f:
         split_line = line.strip().split()
-        anim_steps[split_line[0]].append(int(split_line[1]))
+        species, steps, cause = split_line
+        survivals[species].append(int(steps))
+        death_causes[species][cause] += 1
 
-N = len(anim_steps['Tiger'])
-width = 0.5
+N = len(survivals['Tiger'])
 
-fig, ax = plt.subplots()
-t_bar = ax.bar(0, np.mean(anim_steps['Tiger']), width,
-        yerr=np.std(anim_steps['Tiger']), color='orange')
-g_bar = ax.bar(1, np.mean(anim_steps['Giraffe']), width,
-        yerr=np.std(anim_steps['Giraffe']), color='yellow')
-e_bar = ax.bar(2, np.mean(anim_steps['Elephant']), width,
-        yerr=np.std(anim_steps['Elephant']), color='purple')
+def plot_survival():
+    width = 0.5
+    fig, ax = plt.subplots()
+    t_bar = ax.bar(0, np.mean(survivals['Tiger']), width,
+            yerr=sem(survivals['Tiger']), color='orange')
+    g_bar = ax.bar(1, np.mean(survivals['Giraffe']), width,
+            yerr=sem(survivals['Giraffe']), color='yellow')
+    e_bar = ax.bar(2, np.mean(survivals['Elephant']), width,
+            yerr=sem(survivals['Elephant']), color='purple')
 
-ax.legend((t_bar, g_bar, e_bar), ('Tiger', 'Giraffe', 'Elephant'), loc=2)
-plt.title('Average number of steps survived by species')
-plt.ylabel('Avg. steps alive (with std dev)')
-plt.xlabel('Species')
-plt.tick_params(labelbottom='off')
-plt.show()
+    #ax.legend((t_bar, g_bar, e_bar), ('Tiger', 'Giraffe', 'Elephant'), loc=2)
+
+    ax.set_xticklabels(['Tiger', 'Giraffe', 'Elephant'])
+
+    tick_locator = IndexLocator(1, 0.25)
+    ax.xaxis.set_major_locator(tick_locator)
+
+    plt.title('Average number of steps survived by species (N=%d)' % (N*3))
+    plt.ylabel('Avg. steps alive (with standard error)')
+    plt.show()
+
+def plot_death_causes():
+    for species,causes in death_causes.iteritems():
+        labels = DC.hunger, DC.eaten, DC.thirst
+        sizes = [causes[DC.hunger], causes[DC.eaten], causes[DC.thirst]]
+        colors = ['orange', 'red', 'blue']
+
+        plt.pie(sizes, labels=labels, colors=colors,
+                        autopct='%1.1f%%', shadow=True, startangle=90)
+        # Set aspect ratio to be equal so that pie is drawn as a circle.
+        #plt.axis('equal')
+        plt.title('Death causes for %ss' % species)
+        plt.show()
+
+plot_survival()
+plot_death_causes()

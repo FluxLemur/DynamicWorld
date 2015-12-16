@@ -1,2 +1,2 @@
-CELL_PIXELS = 70
-WORLD_SIZE  = (10,10)            # world dimension
+CELL_PIXELS = 35
+WORLD_SIZE  = (20,20)            # world dimension
