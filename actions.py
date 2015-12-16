@@ -4,8 +4,9 @@ class Action(object):
     pass
 
 class Eat(Action):
-    def __init__(self, food=None):
+    def __init__(self, food=None, is_animal=False):
         self.food = food
+        self.is_animal = is_animal
 
 class Sleep(Action):
     pass

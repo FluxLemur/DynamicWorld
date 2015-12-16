@@ -24,6 +24,7 @@ class Animal(object):
     def __init__(self, world, diet):
         self.world = world
         self.diet = diet
+        self.prey = []
         self.color = 'Black'
         self.uid = Animal.n_animals
         Animal.n_animals += 1
@@ -41,8 +42,8 @@ class Animal(object):
         self.last_sleep = 0
 
         self.is_dead = False
-        self.attacks = 0                                                            # number of attacks the animal has been subject to
-        self.current_cell = None                                                    # the cell the animal is currently in
+        self.death_cause = ''
+        self.current_cell = None   # the cell the animal is currently in
         height = world.size[0]
         width = world.size[1]
         self.cells = [[None for x in range(width)] for x in range(height)]
@@ -111,12 +112,7 @@ class Animal(object):
 
     def death_cause(self):
         assert self.dead()
-        if self.hunger == MAX_STAT and self.thirst == MAX_STAT:
-            return 'Thirst and Hunger'
-        elif self.hunger == MAX_STAT:
-            return 'Hunger'
-        else:
-            return 'Thirst'
+        return self.death_cause
 
     def __repr__(self):
         return '{}, hunger: {} ({}), thirst: {} ({}), energy: {} ({})'.format(
@@ -130,6 +126,13 @@ class Animal(object):
         for food in self.diet:
             if self.current_cell.contains_resource(food):
                 action.food = food
+
+        for prey in self.prey:
+            a = self.current_cell.get_animal_by_type(prey)
+            if a is not None:
+                action.food = a
+                action.is_animal = True
+
         if action.food == None:
             return None
         return action
@@ -149,6 +152,10 @@ class Animal(object):
                 action = Sleep()
 
         return action
+
+    def be_eaten(self):
+        self.is_dead = True
+        self.death_cause = 'Being eaten'
 
     def naive_determine_action(self):
         action = None
@@ -209,7 +216,16 @@ class Animal(object):
         return actions[0][0]
 
     def update_state(self):
-          self.is_dead = self.hunger == MAX_STAT or self.thirst == MAX_STAT
+        if not self.is_dead:
+            if self.hunger == MAX_STAT and self.thirst == MAX_STAT:
+                self.is_dead = True
+                self.death_cause = 'Thirst and Hunger'
+            elif self.hunger == MAX_STAT:
+                self.is_dead = True
+                self.death_cause = 'Hunger'
+            elif self.thirst == MAX_STAT:
+                self.is_dead = True
+                self.death_cause = 'Thirst'
 
     def do_action(self, action):
         if type(action) == Eat:
@@ -249,7 +265,6 @@ giraffe = giraffe.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
 class Elephant(Animal):
     def __init__(self, world):
         super(Elephant,self).__init__(world, Diet.herbivore)
-        self.prey = []
         self.color = 'Purple'
         self.photo = elephant
         self.determine_action = self.naive_determine_action
@@ -264,7 +279,6 @@ class Tiger(Animal):
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
-        self.prey = []
         self.color = 'Yellow'
         self.photo = giraffe
         self.determine_action = self.determine_action_by_score

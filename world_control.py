@@ -33,7 +33,6 @@ class WorldControl:
             i+=1
         self.canvas.pack()
 
-    # TODO: make this work
     def step(self, draw=True):
         if self.done:
             return
@@ -52,4 +51,4 @@ class WorldControl:
         return self.world.steps
 
     def cell_at(self, x, y):
-        return self.world.get_cell(int(x/self.cell_pixels), int(y/self.cell_pixels))
+        return self.world.get_cell(int(y/self.cell_pixels), int(x/self.cell_pixels))

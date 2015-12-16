@@ -26,6 +26,8 @@ class Cell:
             # only when the target cell is different is the move possible
             return self.get_relative_cell(action.direction) != self
         elif type(action) is Eat:
+            if action.is_animal:
+                return action.food in self.animals
             return self.terrain.contains(action.food)
         elif type(action) is Drink:
             return self.terrain.contains(R.water)
@@ -37,6 +39,10 @@ class Cell:
         anim_to_remove = set() # dictionary cannot change size during iteration
                                # so we keep track of all the animals we have to
                                # remove at the end
+
+        anim_to_move = {}      # mapping of animals : cell to be moved to
+        anim_killed = set()    # keeps track of dead animals, so they're not moved
+
         for animal in self.animals:
             if animal.last_step == self.world.steps:
                 continue
@@ -46,37 +52,46 @@ class Cell:
 
             if animal.dead():
                 print '{} on cell ({},{}) died of {}'.format(
-                       animal.get_name(), self.col, self.row, animal.death_cause())
+                       animal.get_name(), self.col, self.row, animal.death_cause)
                 anim_to_remove.add(animal)
                 continue
 
             if type(action) is Move:
-                anim = self.move_animal(animal, action.direction)
-                if anim:
-                    anim_to_remove.add(anim)
+                to_cell = self.get_relative_cell(action.direction)
+                if to_cell != self:
+                    anim_to_remove.add(animal)
+                    anim_to_move[animal] = to_cell
             elif type(action) is Drink:
                 self.terrain.consume_resource(R.water)
             elif type(action) is Eat:
-                self.terrain.consume_resource(action.food)
+                if action.is_animal:
+                    assert action.food in self.animals
+                    action.food.be_eaten()
+                    anim_to_remove.add(action.food)
+                    anim_killed.add(action.food)
+                else:
+                    self.terrain.consume_resource(action.food)
             elif type(action) is Sleep:
                 pass
 
         for anim in anim_to_remove:
             self.animals.remove(anim)
 
+        for anim,to_cell in anim_to_move.iteritems():
+            if anim not in anim_killed:
+                if to_cell:
+                    to_cell.add_animal(anim)
+
+    def get_animal_by_type(self, t):
+        for a in self.animals:
+            if type(a) is t:
+                return a
+        return None
+
     def get_relative_cell(self, direction):
         d_row, d_col = Direction.get_tuple(direction)
         new_cell = self.world.get_relative_cell(self, d_row, d_col)
         return new_cell
-
-    def move_animal(self, animal, direction):
-        assert (animal in self.animals)
-        new_cell = self.get_relative_cell(direction)
-
-        if new_cell != self:
-            new_cell.add_animal(animal)
-            return animal
-        return None
 
     def contains_resource(self, r):
         return self.terrain.contains(r)
