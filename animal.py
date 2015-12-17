@@ -16,6 +16,13 @@ class DeathCause:
     thirst = 'Thirst'
     hunger = 'Hunger'
 
+class Goal:
+    explore,  \
+    eat,      \
+    drink,    \
+    mate,     \
+    sleep     = range(5)
+
 class State:
     hungry,      \
     thirsty,     \
@@ -56,10 +63,16 @@ class Animal(object):
         # this function is the AI part of Animal
         self.determine_action = self.random_determine_action
 
-        # animal has some internal rep. of the world
-
     #def f_fitness(self):        # fitness function
     #    return self.energy - self.hunger - self.thirst - self.attacks * 2
+
+    @staticmethod
+    def birth_animal(parent1, parent2):
+        # TODO: finish this
+        assert parent1.world == parents2.world
+        assert parent1.diet == parents2.diet
+
+        return Animal(parent1.world, parent1.diet)
 
     def eat(self):
         self.gain_thirst()
@@ -177,48 +190,39 @@ class Animal(object):
 
         return action
 
-    def eat_score(self):
-        action = self.get_eat_action()
-        if action is None:
-            return None, 0
-        return action, 1
+    def determine_goal(self):
+        # TODO: how to pick goal?
+        return Goal.explore
 
-    def drink_score(self):
-        action = self.get_drink_action()
-        if action is None:
-            return None, 0
-        return action, 1
+    def explore_action(self):
+        # TODO: think about exploration heuristics
+        return Move(Direction.random_direction())
 
-    def sleep_score(self):
-        return Sleep(), 1
+    def eat_action(self):
+        # TODO: find cell with food, and go towards there, or eat here
+        pass
 
-    def move_north_score(self):
-        return Move(Direction.north), 1
+    def drink_action(self):
+        # TODO: similar to eat
+        pass
 
-    def move_south_score(self):
-        return Move(Direction.south), 1
+    def mate_action(self):
+        # TODO: think about how this should be done
+        pass
 
-    def move_east_score(self):
-        return Move(Direction.east), 1
+    def determine_action_by_goal(self):
+        goal = self.determine_goal(self)
 
-    def move_west_score(self):
-        return Move(Direction.west), 1
-
-    def determine_action_by_score(self):
-        actions = []  # should be of the form [(action obj, int score) ...]
-                      # TODO: think about normalizing the scores somehow
-
-        actions.append(self.eat_score())
-        actions.append(self.drink_score())
-        actions.append(self.sleep_score())
-        actions.append(self.move_north_score())
-        actions.append(self.move_south_score())
-        actions.append(self.move_east_score())
-        actions.append(self.move_west_score())
-
-        actions.sort(key=lambda a: -a[1])
-
-        return actions[0][0]
+        if goal == Goal.explore:
+            return self.explore_action()
+        elif goal == Goal.eat:
+            return self.eat_action()
+        elif goal == Goal.drink:
+            return self.drink_action()
+        elif goal == Goal.mate:
+            return self.mate_action()
+        else: # goal == sleep
+            return Sleep()
 
     def update_state(self):
         if not self.is_dead:
@@ -283,7 +287,7 @@ class Giraffe(Animal):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.color = 'Yellow'
         self.photo = giraffe
-        self.determine_action = self.determine_action_by_score
+        self.determine_action = self.naive_determine_action
 
 class Animals:
     animals = [Giraffe, Elephant, Tiger]

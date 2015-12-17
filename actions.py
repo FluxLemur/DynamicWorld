@@ -14,6 +14,10 @@ class Sleep(Action):
 class Drink(Action):
     pass
 
+class Mate(Action):
+    def __init__(self, partner):
+        self.partner = partner
+
 class Direction:
     north = 0
     east  = 1
@@ -43,7 +47,7 @@ class Move(Action):
         self.direction = direction
 
 class Actions:
-    actions = [Sleep, Drink, Eat, Move]
+    actions = [Sleep, Drink, Eat, Move] # TODO: add Mate
 
     @staticmethod
     def random_action():

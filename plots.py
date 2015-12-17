@@ -3,8 +3,9 @@ from matplotlib.ticker import IndexLocator
 import numpy as np
 from scipy.stats import sem
 from animal import DeathCause as DC
+import sys
 
-data_file = 'data/large_world_1.txt'
+data_file = sys.argv[1] if len(sys.argv) >= 1 else 'data/large_world_1.txt'
 
 survivals = {'Tiger':[], 'Giraffe':[], 'Elephant':[]}
 
@@ -12,6 +13,7 @@ causes = {DC.hunger: 0, DC.eaten: 0, DC.thirst:0}
 death_causes = {'Tiger':causes.copy(), 'Giraffe':causes.copy(), 'Elephant':causes.copy()}
 
 with open(data_file) as f:
+    f.readline()  # the first line should contain a comment
     for line in f:
         split_line = line.strip().split()
         species, steps, cause = split_line
@@ -48,7 +50,7 @@ def plot_death_causes():
         colors = ['orange', 'red', 'blue']
 
         plt.pie(sizes, labels=labels, colors=colors,
-                        autopct='%1.1f%%', shadow=True, startangle=90)
+                        autopct='%1.1f%%', startangle=90)
         # Set aspect ratio to be equal so that pie is drawn as a circle.
         #plt.axis('equal')
         plt.title('Death causes for %ss' % species)

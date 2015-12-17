@@ -61,8 +61,10 @@ class Cell:
                 if to_cell != self:
                     anim_to_remove.add(animal)
                     anim_to_move[animal] = to_cell
+
             elif type(action) is Drink:
                 self.terrain.consume_resource(R.water)
+
             elif type(action) is Eat:
                 if action.is_animal:
                     assert action.food in self.animals
@@ -71,6 +73,11 @@ class Cell:
                     anim_killed.add(action.food)
                 else:
                     self.terrain.consume_resource(action.food)
+
+            elif type(action) is Mate:
+                #TODO: handle Mating
+                pass
+
             elif type(action) is Sleep:
                 pass
 
@@ -103,7 +110,7 @@ class Cell:
 
     def add_animal(self, animal):
         animal.current_cell = self
-        animal.cells[self.row][self.col] = self
+        animal.cells[self.row][self.col] = CellSnapshot(self)
         self.animals.add(animal)
 
     def draw(self, canvas, x0, y0, x1, y1, use_images=True):
@@ -144,3 +151,10 @@ class Cell:
         for a in animals:
             cell.add_animal(a)
         return cell
+
+class CellSnapshot():
+    def __init__(self, cell):
+        self.row = cell.row
+        self.col = cell.col
+        self.animals = [type(a) for a in cell.animals]
+        self.terrain_snapshot = TerrainSnapshot(cell.terrain)

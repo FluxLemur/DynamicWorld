@@ -38,6 +38,8 @@ class ControlHub:
             self.step()
         elif press == "'\\\\'":
             self.step_many()
+        elif press == "']'":
+            self.step_until_done()
         else:
             print press # TODO: remove this eventually
 
@@ -89,6 +91,10 @@ class ControlHub:
             self.world_control.step(draw=False)
         self.step()
 
+    def step_until_done(self):
+        while not self.world_control.done:
+            self.step(False)
+
     def _make_command_bar(self):
         #step_str = StringVar(self.master)
         #step_str.set('0')
@@ -98,8 +104,7 @@ class ControlHub:
             self.step_many()
 
         def _step_until_done():
-            while not self.world_control.done:
-                self.step(False)
+            self.step_until_done()
 
         commands = Tk()
         commands.title('Commands')

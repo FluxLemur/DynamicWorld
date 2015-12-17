@@ -83,3 +83,7 @@ class Terrains:
         terrain = random.choice(Terrains.terrains)()
         terrain.randomly_populate_resources()
         return terrain
+
+class TerrainSnapshot:
+    def __init__(self, terrain):
+        self.resources = terrain.resources.copy()

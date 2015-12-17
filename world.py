@@ -78,9 +78,6 @@ class World:
     def get_cell(self, x, y):
         return self.cells[x][y]
 
-    def add_animal(self, x, y, animal):
-        self.cells[x][y].add_animal(animal)
-
     def roulette(self, sorted_fitness, dic):
       r = random.randint(0, tot_fitness)
       S = 0
@@ -115,9 +112,14 @@ class World:
       # mutation
 
     def print_animal_stats(self):
-        print 'Animal, Steps survived'
+        ret = 'Animal, Steps survived, Death cause'
         for anim in self.animals:
-            print '{} {} {}'.format(anim.get_name(), anim.last_step, anim.death_cause)
+            ret += '\n{} {} {}'.format(anim.get_name(), anim.last_step, anim.death_cause)
+
+        print ret
+
+        with open('data/temp.txt', 'w') as f:
+            f.write(ret)
 
     def all_dead(self):
         for anim in self.animals:
