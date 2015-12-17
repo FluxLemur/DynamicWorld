@@ -1,3 +1,4 @@
+This is when each animal moves randomly (except for elephants, I think)
 Giraffe 109
 Elephant 130
 Tiger 109
