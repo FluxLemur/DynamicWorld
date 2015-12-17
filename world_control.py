@@ -15,6 +15,9 @@ class WorldControl:
         self.done = False
 
     def draw(self):
+        if self.canvas is None:
+            return
+
         self.canvas.delete('all')
         i=0
         for row in self.world.cells:

@@ -112,7 +112,8 @@ class World:
       # mutation
 
     def print_animal_stats(self):
-        ret = 'Animal, Steps survived, Death cause'
+        #ret = 'Animal, Steps survived, Death cause'
+        ret = ''
         for anim in self.animals:
             ret += '\n{} {} {}'.format(anim.get_name(), anim.last_step, anim.death_cause)
 

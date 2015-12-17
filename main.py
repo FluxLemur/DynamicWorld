@@ -7,22 +7,30 @@ HEIGHT = CELL_PIXELS * WORLD_SIZE[1]
 N_STEPS = 100
 
 class ControlHub:
-    def __init__(self, use_images):
-        self.master = Tk()
-        self.master.title('World')
-        self.master.bind("<Button-1>", self._click_callback)
-        self.master.bind("<Key>", self._key_callback)
+    def __init__(self, use_images, use_display):
+        self.use_display = use_display
+        if use_display:
+            self.master = Tk()
+            self.master.title('World')
+            self.master.bind("<Button-1>", self._click_callback)
+            self.master.bind("<Key>", self._key_callback)
 
-        self.canvas = Canvas(self.master, width=WIDTH, height=HEIGHT)
-        self.canvas.pack(side=TOP)
-        self.world_control = WorldControl(self.canvas, use_images)
-        self._make_command_bar()
-        self.info_popup = None    # TODO: does this as a mouseover???
+            self.canvas = Canvas(self.master, width=WIDTH, height=HEIGHT)
+            self.canvas.pack(side=TOP)
+            self._make_command_bar()
+            self.info_popup = None    # TODO: does this as a mouseover???
+            self.world_control = WorldControl(self.canvas, use_images)
+        else:
+            self.world_control = WorldControl(None, use_images)
 
     def run(self):
         ''' Print world_control and start the Tkinter mainloop '''
-        self.world_control.draw()
-        mainloop()
+        if self.use_display:
+            self.world_control.draw()
+            mainloop()
+        else:
+            self.step_until_done()
+            exit()
 
     def _click_callback(self,event):
         cell = self.world_control.cell_at(event.x, event.y)
@@ -79,7 +87,8 @@ class ControlHub:
 
     def step(self, draw=True):
         self.world_control.step(draw=draw)
-        print self.world_control.get_steps()
+        if self.use_display:
+            print self.world_control.get_steps()
         #print step_str.get()
 
         # for some reason this doesn't work
@@ -116,9 +125,13 @@ class ControlHub:
 
 def main():
     use_images = True
-    if len(sys.argv) >= 2 and sys.argv[1] in ['--no_images', '-n']:
-        use_images = False
-    world = ControlHub(use_images)
+    use_display = True
+    if len(sys.argv) >= 2:
+        if sys.argv[1] in ['--no_images', '-n']:
+            use_images = False
+        elif sys.argv[1] in ['--no_display']:
+            use_display = False
+    world = ControlHub(use_images, use_display)
     world.run()
 
 if __name__ == '__main__':
