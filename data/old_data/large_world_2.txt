@@ -1,4 +1,4 @@
-Animal, Steps survived, Death cause. This is a control set of simulations in which each of the animals acts randomly.
+This is a control set of simulations in which each of the animals acts randomly. However, I think something here is not correct, because I reran these experiments and got rather different results. Probably not good to use these.
 Tiger 176 Hunger
 Giraffe 14 Eaten
 Tiger 49 Thirst
