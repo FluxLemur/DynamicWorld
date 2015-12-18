@@ -337,13 +337,24 @@ class Animal(object):
         return action
 
 elephant = Image.open('elephant.png')
-elephant = elephant.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+elephant1 = elephant.resize((CELL_PIXELS, CELL_PIXELS),Image.ANTIALIAS)
+elephant2 = elephant.resize((CELL_PIXELS/2, CELL_PIXELS),Image.ANTIALIAS)
+elephant3 = elephant.resize((CELL_PIXELS/3, CELL_PIXELS),Image.ANTIALIAS)
 
 tiger = Image.open('tiger.png')
-tiger = tiger.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+tiger1 = tiger.resize((CELL_PIXELS, CELL_PIXELS),Image.ANTIALIAS)
+tiger2 = tiger.resize((CELL_PIXELS/2, CELL_PIXELS),Image.ANTIALIAS)
+tiger3 = tiger.resize((CELL_PIXELS/3, CELL_PIXELS),Image.ANTIALIAS)
 
 giraffe = Image.open('giraffe.png')
-giraffe = giraffe.resize((CELL_PIXELS/2, CELL_PIXELS/2),Image.ANTIALIAS)
+giraffe1 = giraffe.resize((CELL_PIXELS, CELL_PIXELS),Image.ANTIALIAS)
+giraffe2 = giraffe.resize((CELL_PIXELS/2, CELL_PIXELS),Image.ANTIALIAS)
+giraffe3 = giraffe.resize((CELL_PIXELS/3, CELL_PIXELS),Image.ANTIALIAS)
+
+class AnimalPhotos:
+    giraffe = [giraffe1, giraffe2, giraffe3]
+    tiger = [tiger1, tiger2, tiger3]
+    elephant = [elephant1, elephant2, elephant3]
 
 class Elephant(Animal):
     def __init__(self, world):
@@ -364,7 +375,6 @@ class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.color = 'Yellow'
-        self.photo = giraffe
         self.determine_action = self.naive_determine_action
 
 class Animals:

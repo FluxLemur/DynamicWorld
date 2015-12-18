@@ -3,6 +3,7 @@ from sets import Set
 from terrain import *
 from PIL import ImageTk
 from resources import Resources as R
+from animal import AnimalPhotos
 from collections import Counter
 import math
 
@@ -15,7 +16,9 @@ class Cell:
         self.animals   = Set()
         self.world     = world
         self.row, self.col = coord
-        self.photo = None
+        self.photo1 = None
+        self.photo2 = None
+        self.photo3 = None
 
     def step(self):
         ''' change resources, step all animals in cell '''
@@ -141,15 +144,70 @@ class Cell:
         dy = y1-y0
         l = len(self.animals) * 5
         i = 1.0
-        for animal in self.animals:
-            if use_images:
-                photo = ImageTk.PhotoImage(animal.photo)
-                canvas.create_image(x0+dx/2, y0+dy/2, image=photo)
-                self.photo = photo
-            else:
-                canvas.create_rectangle(x0 + i*dx/l, y0+i*dy/l,x1-i*dx/l, y1-i*dy/l,
-                                        fill=animal.color)
-                i += 2
+
+        if use_images:
+            in_cell = [False, False, False]       # (giraffe, tiger, elphant)
+            for animal in self.animals:
+                print animal.get_name()
+                if animal.get_name() == 'Giraffe':
+                    in_cell[0] = True
+                elif animal.get_name() == 'Tiger':
+                    in_cell[1] = True
+                else:
+                    in_cell[2] = True
+
+            g = in_cell[0]
+            t = in_cell[1]
+            e = in_cell[2]
+
+            if g and t and e:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.giraffe[2])
+                self.photo2 = ImageTk.PhotoImage(AnimalPhotos.elephant[2])
+                self.photo3 = ImageTk.PhotoImage(AnimalPhotos.tiger[2])
+                canvas.create_image(x0+dx/6, y0+dy/2, image = self.photo1)
+                canvas.create_image(x0+dx/2, y0+dy/2, image = self.photo2)
+                canvas.create_image(x0+5*dx/3, y0+dy/2, image = self.photo3)
+
+            elif g and t:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.giraffe[1])
+                self.photo2 = ImageTk.PhotoImage(AnimalPhotos.tiger[1])
+                canvas.create_image(x0+dx/4, y0+dy/2, image = self.photo1)
+                canvas.create_image(x0+3*dx/4, y0+dy/2, image = self.photo2)
+
+            elif g and e:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.giraffe[1])
+                self.photo2 = ImageTk.PhotoImage(AnimalPhotos.elephant[1])
+                canvas.create_image(x0+dx/4, y0+dy/2, image = self.photo1)
+                canvas.create_image(x0+3*dx/4, y0+dy/2, image = self.photo2)
+
+            elif t and e:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.elephant[1])
+                self.photo2 = ImageTk.PhotoImage(AnimalPhotos.tiger[1])
+                canvas.create_image(x0+dx/4, y0+dy/2, image = self.photo1)
+                canvas.create_image(x0+3*dx/4, y0+dy/2, image = self.photo2)
+
+            elif g:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.giraffe[0])
+                canvas.create_image(x0+dx/2, y0+dy/2, image = self.photo1)
+
+            elif t:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.tiger[0])
+                canvas.create_image(x0+dx/2, y0+dy/2, image = self.photo1)
+
+            elif e:
+                self.photo1 = ImageTk.PhotoImage(AnimalPhotos.elephant[0])
+                canvas.create_image(x0+dx/2, y0+dy/2, image = self.photo1)
+
+        else:
+            for animal in self.animals:
+                if use_images:
+                    photo = ImageTk.PhotoImage(animal.photo)
+                    canvas.create_image(x0+dx/2, y0+dy/2, image=photo)
+                    self.photo = photo
+                else:
+                    canvas.create_rectangle(x0 + i*dx/l, y0+i*dy/l,x1-i*dx/l,
+                        y1-i*dy/l,fill=animal.color)
+                    i += 2
 
     def resources_str(self):
         return '[{}]'.format(
