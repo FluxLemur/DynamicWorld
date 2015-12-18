@@ -369,13 +369,13 @@ class Tiger(Animal):
         self.prey = [Elephant, Giraffe]
         self.color = 'Orange'
         self.photo = tiger
-        self.determine_action = self.naive_determine_action
+        self.determine_action = self.determine_action_by_goal
 
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.color = 'Yellow'
-        self.determine_action = self.naive_determine_action
+        self.determine_action = self.determine_action_by_goal
 
 class Animals:
     animals = [Giraffe, Elephant, Tiger]

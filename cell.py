@@ -3,7 +3,6 @@ from sets import Set
 from terrain import *
 from PIL import ImageTk
 from resources import Resources as R
-from animal import AnimalPhotos
 from collections import Counter
 import math
 
@@ -40,8 +39,7 @@ class Cell:
             pass #TODO: handle
 
         else:
-            if type(action) is not Sleep:
-                print type(action)
+            assert type(action) is Sleep
 
             return True
 
@@ -148,7 +146,7 @@ class Cell:
         if use_images:
             in_cell = [False, False, False]       # (giraffe, tiger, elphant)
             for animal in self.animals:
-                print animal.get_name()
+                #print animal.get_name()
                 if animal.get_name() == 'Giraffe':
                     in_cell[0] = True
                 elif animal.get_name() == 'Tiger':
@@ -160,6 +158,8 @@ class Cell:
             t = in_cell[1]
             e = in_cell[2]
 
+
+            from animal import AnimalPhotos
             if g and t and e:
                 self.photo1 = ImageTk.PhotoImage(AnimalPhotos.giraffe[2])
                 self.photo2 = ImageTk.PhotoImage(AnimalPhotos.elephant[2])
