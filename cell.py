@@ -3,6 +3,8 @@ from sets import Set
 from terrain import *
 from PIL import ImageTk
 from resources import Resources as R
+from collections import Counter
+import math
 
 class Cell:
     ''' A cell has a terrain and set of animals.
@@ -31,8 +33,13 @@ class Cell:
             return self.terrain.contains(action.food)
         elif type(action) is Drink:
             return self.terrain.contains(R.water)
+        elif type(action) is Mate:
+            pass #TODO: handle
+
         else:
-            assert type(action) is Sleep
+            if type(action) is not Sleep:
+                print type(action)
+
             return True
 
     def step_animals(self):
@@ -42,6 +49,8 @@ class Cell:
 
         anim_to_move = {}      # mapping of animals : cell to be moved to
         anim_killed = set()    # keeps track of dead animals, so they're not moved
+
+        new_animals = {}       # animals to be added, due to mating
 
         for animal in self.animals:
             if animal.last_step == self.world.steps:
@@ -75,19 +84,27 @@ class Cell:
                     self.terrain.consume_resource(action.food)
 
             elif type(action) is Mate:
-                #TODO: handle Mating
-                pass
+                partner = action.partner
+                if (animal, partner) in new_animals or \
+                   (partner, animal) in new_animals:
+                       continue
+                else:
+                    child = Animal.birth_animal(animal, partner)
+                    new_animals[(animal, partner)] = child
 
             elif type(action) is Sleep:
                 pass
 
-        for anim in anim_to_remove:
-            self.animals.remove(anim)
+        for animal in anim_to_remove:
+            self.animals.remove(animal)
 
-        for anim,to_cell in anim_to_move.iteritems():
-            if anim not in anim_killed:
+        for animal,to_cell in anim_to_move.iteritems():
+            if animal not in anim_killed:
                 if to_cell:
-                    to_cell.add_animal(anim)
+                    to_cell.add_animal(animal)
+        for animal in new_animals.itervalues():
+            self.add_animal(animal)
+            self.world.animals.add(animal)    # the world keeps track of all animals
 
     def get_animal_by_type(self, t):
         for a in self.animals:
@@ -96,7 +113,7 @@ class Cell:
         return None
 
     def get_relative_cell(self, direction):
-        d_row, d_col = Direction.get_tuple(direction)
+        d_row, d_col = direction
         new_cell = self.world.get_relative_cell(self, d_row, d_col)
         return new_cell
 
@@ -110,7 +127,7 @@ class Cell:
 
     def add_animal(self, animal):
         animal.current_cell = self
-        animal.cells[self.row][self.col] = CellSnapshot(self)
+        animal.cells[self.row][self.col] = CellSnapshot(self, self.world.steps)
         self.animals.add(animal)
 
     def draw(self, canvas, x0, y0, x1, y1, use_images=True):
@@ -152,9 +169,61 @@ class Cell:
             cell.add_animal(a)
         return cell
 
+    def get_neighbors(self):
+        # returns the neighbors of this cell in the world
+        neighbors = set()
+
+        for d_row, d_col in Direction.directions:
+            new_cell = self.world.get_relative_cell(self, d_row, d_col)
+            if new_cell != self:
+                neighbors.add(new_cell)
+
+        return neighbors
+
+    @staticmethod
+    def distance(cell1, cell2):
+        dr = cell1.row - cell2.row
+        dc = cell1.col - cell2.col
+
+        dr *= dr
+        dc *= dc
+
+        return math.sqrt(dr + dc)
+
+    @staticmethod
+    def direction_to(from_cell, to_cell):
+        # return the direction from one cell to another. If the cells have the
+        # coordinates, then None
+        assert from_cell is not None
+        assert to_cell is not None
+        dr = to_cell.row - from_cell.row
+        dc = to_cell.col - from_cell.col
+
+        if dr == 0 and dc == 0:
+            return None
+
+        ret = ()
+        if abs(dr) > abs(dc):
+            ret = (cmp(dr,0), 0)
+        else:
+            ret = (0, cmp(dc,0))
+        return ret
+
 class CellSnapshot():
-    def __init__(self, cell):
+    def __init__(self, cell, steps):
         self.row = cell.row
         self.col = cell.col
-        self.animals = [type(a) for a in cell.animals]
+        self.animal_type_counter = Counter([type(a) for a in cell.animals])
         self.terrain_snapshot = TerrainSnapshot(cell.terrain)
+        self.step_time = steps
+
+    def has_food(self, foods):
+        for food in foods:
+            if type(food) in self.animal_type_counter:
+                    return True
+            elif self.terrain_snapshot.contains(food):
+                return True
+        return False
+
+    def has_water(self):
+        return self.terrain_snapshot.contains(R.water)

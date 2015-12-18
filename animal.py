@@ -3,6 +3,7 @@ from actions import *
 from resources import Resources as R
 from constance import *
 from PIL import Image
+from cell import Cell
 
 class Diet:
     herbivore = [R.grass, R.fruit, R.leaves]
@@ -17,11 +18,11 @@ class DeathCause:
     hunger = 'Hunger'
 
 class Goal:
-    explore,  \
-    eat,      \
-    drink,    \
-    mate,     \
-    sleep     = range(5)
+    explore, \
+    eat,     \
+    drink,   \
+    mate,    \
+    rest     = range(5)
 
 class State:
     hungry,      \
@@ -71,8 +72,10 @@ class Animal(object):
         # TODO: finish this
         assert parent1.world == parents2.world
         assert parent1.diet == parents2.diet
+        assert parent1.__class__ == parent2.__class__
 
-        return Animal(parent1.world, parent1.diet)
+        Species = parent1.__class__
+        return Species(parent1.world, parent1.diet)
 
     def eat(self):
         self.gain_thirst()
@@ -192,36 +195,107 @@ class Animal(object):
 
     def determine_goal(self):
         # TODO: how to pick goal?
+        if self.thirst > 1:
+            if self.hunger > self.thirst:
+                return Goal.eat
+            else:
+                return Goal.drink
+        elif self.hunger > 1:
+            return Goal.eat
+        elif self.energy == 0:
+            return Goal.rest
+
+        #TODO: what about mating?
         return Goal.explore
 
     def explore_action(self):
         # TODO: think about exploration heuristics
+        #nones = 0
+        #for row in self.cells:
+        #    for c in row:
+        #        if c is None:
+        #            nones += 1
+        #print nones
+
+        for neighbor in self.current_cell.get_neighbors():
+            row,col = neighbor.row, neighbor.col
+
+            if self.cells[row][col] is None:
+                dir_to = Cell.direction_to(self.current_cell, neighbor)
+                if dir_to is not None:
+                    return Move(dir_to)
+
         return Move(Direction.random_direction())
+
+    def find_closest(self, goal_func):
+        # returns the nearest cell to self.current_cell that satisfies
+        # (goal_func: CellSnapshot -> bool)
+        satisfying_cells = {}         # map from cell to distance
+        for row in self.cells:
+            for cell_snapshot in row:
+                if cell_snapshot is not None and goal_func(cell_snapshot):
+                    dist = Cell.distance(self.current_cell, cell_snapshot)
+                    satisfying_cells[cell_snapshot] = dist
+
+        if len(satisfying_cells) == 0:
+            return None
+
+        best_cell, _ = min(satisfying_cells.iteritems(), key=lambda x: x[1])
+        return best_cell
 
     def eat_action(self):
         # TODO: find cell with food, and go towards there, or eat here
-        pass
+        local_food = self.get_eat_action()
+        if local_food is not None:
+            return local_food
+
+        best_cell = self.find_closest(lambda cs: cs.has_food(self.diet + self.prey))
+        if best_cell is not None:
+            dir_to = Cell.direction_to(self.current_cell, best_cell)
+            if dir_to is None:
+                eat = self.get_eat_action()
+                if eat is None:
+                    return self.explore_action()
+                else:
+                    return eat
+
+        return self.explore_action()
 
     def drink_action(self):
         # TODO: similar to eat
-        pass
+        local_drink = self.get_drink_action()
+        if local_drink is not None:
+            return local_drink
+        else:
+            best_cell = self.find_closest(lambda cs: cs.has_water())
+            if best_cell is not None:
+                dir_to = Cell.direction_to(self.current_cell, best_cell)
+                if dir_to is not None:
+                    return Move(dir_to)
+
+        return self.explore_action()
 
     def mate_action(self):
         # TODO: think about how this should be done
         pass
 
     def determine_action_by_goal(self):
-        goal = self.determine_goal(self)
+        goal = self.determine_goal()
 
         if goal == Goal.explore:
+            #print 'goal: explore'
             return self.explore_action()
         elif goal == Goal.eat:
+            #print 'goal: eat'
             return self.eat_action()
         elif goal == Goal.drink:
+            #print 'goal: drink'
             return self.drink_action()
         elif goal == Goal.mate:
+            #print 'goal: mate'
             return self.mate_action()
-        else: # goal == sleep
+        else: # goal == rest
+            #print 'goal: sleep'
             return Sleep()
 
     def update_state(self):
@@ -242,6 +316,9 @@ class Animal(object):
 
         elif type(action) == Move:
             self.move()
+
+        elif type(action) == Mate:
+            pass #TODO: handle
 
         else:
             assert type(action) == Sleep
@@ -273,7 +350,7 @@ class Elephant(Animal):
         super(Elephant,self).__init__(world, Diet.herbivore)
         self.color = 'Purple'
         self.photo = elephant
-        self.determine_action = self.naive_determine_action
+        self.determine_action = self.determine_action_by_goal
 
 class Tiger(Animal):
     def __init__(self, world):
@@ -281,6 +358,7 @@ class Tiger(Animal):
         self.prey = [Elephant, Giraffe]
         self.color = 'Orange'
         self.photo = tiger
+        self.determine_action = self.naive_determine_action
 
 class Giraffe(Animal):
     def __init__(self, world):

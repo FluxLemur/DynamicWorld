@@ -1,8 +1,12 @@
+DONE
 - collect stats about animals (avg survived steps per species)
 - implement tiger eating another animal
 - incrase world to 20x20
 - action_score layout (get a score for each possible move, take the best one)
-
 - animal internal world rep
+- cell snapshots
 - searching in internal rep
-- genetic algorithms
+- goal-based actions
+
+TODO
+- Mating. Animals have a reproductive age, have to be in the same cell (aka genetic algorithm)

@@ -2,7 +2,7 @@ import random
 from collections import Counter
 from resources import Resources as R
 
-GENERATE_RESOURCE = 0.9999
+GENERATE_RESOURCE = 0.995
 
 # Note: for colors, see http://wiki.tcl.tk/37701
 class Terrain(object):
@@ -87,3 +87,6 @@ class Terrains:
 class TerrainSnapshot:
     def __init__(self, terrain):
         self.resources = terrain.resources.copy()
+
+    def contains(self, r):
+        return r in self.resources and self.resources[r] > 0

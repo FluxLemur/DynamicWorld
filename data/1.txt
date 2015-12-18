@@ -1,4 +1,4 @@
-Animal, Steps survived, Death cause
+Here, elephants have naive_determine_action, and the rest are random
 Elephant 49 Thirst
 Giraffe 102 Thirst
 Tiger 49 Thirst

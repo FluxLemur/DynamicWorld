@@ -19,28 +19,15 @@ class Mate(Action):
         self.partner = partner
 
 class Direction:
-    north = 0
-    east  = 1
-    south = 2
-    west  = 3
+    north = (-1,0)
+    east  = (0,1)
+    south = (1,0)
+    west  = (0,-1)
     directions = [north, east, south, west]
 
     @staticmethod
     def random_direction():
         return random.choice(Direction.directions)
-
-    @staticmethod
-    def get_tuple(direction):
-        ''' Returns the direction tuple in a grid with (0,0) at the top left,
-            (horizontal, vertical) orientation '''
-        if direction == Direction.north:
-            return (-1,0)
-        elif direction == Direction.south:
-            return (1,0)
-        elif direction == Direction.east:
-            return (0,1)
-        elif direction == Direction.west:
-            return (0,-1)
 
 class Move(Action):
     def __init__(self, direction=None):
