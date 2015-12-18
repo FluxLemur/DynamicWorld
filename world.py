@@ -16,16 +16,25 @@ class World:
         self.high = size[1]
         self.steps = 0
         self.animals = set()
+        self.species_count = {A: 0 for A in Animals.animals}
+        self.counts = []
 
     def __iter__(self):
         return self
 
+    def get_counts(self):
+        c = self.species_count
+        a = Animals.animals
+        return (c[a[0]],c[a[1]],c[a[2]])
+
     def step(self):
         ''' do one time step in the world '''
+        self.counts.append((self.get_counts()))
         for row in self.cells:
             for cell in row:
                 cell.step()
         self.steps += 1
+
 
     def get_relative_cell(self, cell, d_row, d_col):
         new_row = cell.row + d_row
@@ -58,7 +67,9 @@ class World:
                 animal_i = int(anim[i])
                 cell_animals = []
                 if animal_i != 0:
-                    cell_animals.append(Animals.animals[animal_i-1](self))
+                    animal = Animals.animals[animal_i-1](self)
+                    cell_animals.append(animal)
+                    self.species_count[type(animal)] += 1
                 row[j] = Cell.from_int(int(world[i]), cell_animals, self, (row_i, j))
                 self.animals.update(cell_animals)
                 i += 1
@@ -117,9 +128,13 @@ class World:
         for anim in self.animals:
             ret += '\n{} {} {}'.format(anim.get_name(), anim.last_step, anim.death_cause)
 
-        print ret
-
         with open('data/temp.txt', 'w') as f:
+            f.write(ret)
+
+        ret = ' '.join([a.__name__ for a in Animals.animals])
+        for (a,b,c) in self.counts:
+            ret += '\n{} {} {}'.format(a,b,c)
+        with open('data/temp_timeseries.txt', 'w') as f:
             f.write(ret)
 
     def all_dead(self):

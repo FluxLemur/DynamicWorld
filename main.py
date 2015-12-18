@@ -104,6 +104,9 @@ class ControlHub:
         while not self.world_control.done:
             self.step(False)
 
+    def dump_stats(self):
+        self.world_control.world.print_animal_stats()
+
     def _make_command_bar(self):
         #step_str = StringVar(self.master)
         #step_str.set('0')
@@ -111,9 +114,10 @@ class ControlHub:
             self.step()
         def _step_many():
             self.step_many()
-
         def _step_until_done():
             self.step_until_done()
+        def _dump_stats():
+            self.dump_stats()
 
         commands = Tk()
         commands.title('Commands')
@@ -122,6 +126,8 @@ class ControlHub:
         Button(commands, text='step 100', width=15, command=_step_many).grid(row=0, column=1)
         Button(commands, text='step until done', width=15,
                command=_step_until_done).grid(row=0, column=2)
+        Button(commands, text='dump stats', width=15,
+               command=_dump_stats).grid(row=0, column=3)
 
 def main():
     use_images = True
