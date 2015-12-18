@@ -5,12 +5,14 @@ from scipy.stats import sem
 from animal import DeathCause as DC
 import sys
 
-data_file = sys.argv[1] if len(sys.argv) >= 1 else 'data/large_world_1.txt'
+data_file = sys.argv[1] if len(sys.argv) > 1 else 'data/temp.txt'
+time_file = sys.argv[2] if len(sys.argv) > 2 else 'data/temp_timeseries.txt'
 
 survivals = {'Tiger':[], 'Giraffe':[], 'Elephant':[]}
 
 causes = {DC.hunger: 0, DC.eaten: 0, DC.thirst:0}
 death_causes = {'Tiger':causes.copy(), 'Giraffe':causes.copy(), 'Elephant':causes.copy()}
+timeseries = {'Tiger':[], 'Giraffe':[], 'Elephant':[]}
 
 with open(data_file) as f:
     f.readline()  # the first line should contain a comment
@@ -19,6 +21,15 @@ with open(data_file) as f:
         species, steps, cause = split_line
         survivals[species].append(int(steps))
         death_causes[species][cause] += 1
+
+with open(time_file) as f:
+    f.readline()
+    for line in f:
+        split_line = line.strip().split()
+        g, e, t = split_line
+        timeseries['Giraffe'].append(int(g))
+        timeseries['Elephant'].append(int(e))
+        timeseries['Tiger'].append(int(t))
 
 N = len(survivals['Tiger'])
 
@@ -56,5 +67,17 @@ def plot_death_causes():
         plt.title('Death causes for %ss' % species)
         plt.show()
 
+def plot_timeseries():
+    plt.plot(timeseries['Giraffe'], linewidth=4, color='yellow', label='Giraffe')
+    plt.plot(timeseries['Elephant'], linewidth=4, color='purple', label='Elephant')
+    plt.plot(timeseries['Tiger'], linewidth=4, color='orange', label='Tiger')
+    plt.legend(loc=1)
+
+    plt.title('Number of Animals over time')
+    plt.xlabel('Time Step')
+    plt.ylabel('Number of Animals Alive')
+    plt.show()
+
+plot_timeseries()
 plot_survival()
 plot_death_causes()

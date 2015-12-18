@@ -25,6 +25,14 @@ class World:
     def get_counts(self):
         c = self.species_count
         a = Animals.animals
+
+        c[a[0]] = 0
+        c[a[1]] = 0
+        c[a[2]] = 0
+        for animal in self.animals:
+            if not animal.dead():
+                c[type(animal)] += 1
+
         return (c[a[0]],c[a[1]],c[a[2]])
 
     def step(self):
