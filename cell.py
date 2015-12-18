@@ -36,14 +36,14 @@ class Cell:
         elif type(action) is Drink:
             return self.terrain.contains(R.water)
         elif type(action) is Mate:
-            pass #TODO: handle
-
+            return action.partner in self.animals
         else:
             assert type(action) is Sleep
 
             return True
 
     def step_animals(self):
+        from animal import Animal
         anim_to_remove = set() # dictionary cannot change size during iteration
                                # so we keep track of all the animals we have to
                                # remove at the end

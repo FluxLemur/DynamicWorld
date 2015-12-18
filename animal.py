@@ -11,6 +11,7 @@ class Diet:
 
 MAX_STAT = 11
 STAT_INC = 2
+MATE_AGE = 150
 
 class DeathCause:
     eaten = 'Eaten'
@@ -45,6 +46,7 @@ class Animal(object):
         self.conditions = set()     # empty set is healthy
         self.last_step = -1         # keeps track, so as not to move an animal
                                     # twice in one time step
+        self.born_on = world.steps
 
         self.hunger = 0             # hunger level
         self.energy = MAX_STAT      # energy level
@@ -64,18 +66,27 @@ class Animal(object):
         # this function is the AI part of Animal
         self.determine_action = self.random_determine_action
 
-    #def f_fitness(self):        # fitness function
-    #    return self.energy - self.hunger - self.thirst - self.attacks * 2
+        # PARAMETERS
+        self.hunger_thresh = 1
+        self.thirst_thresh = 1
+        self.energy_thresh = 1
+        self.mate_chance   = 0.01
+
+        #self.hunger_thresh = p1 # 1
+        #self.thirst_thresh = p2 # 1
+        #self.energy_thresh = p3 # 1
+        #self.mate_chance   = p4 # 0.25
 
     @staticmethod
     def birth_animal(parent1, parent2):
-        # TODO: finish this
-        assert parent1.world == parents2.world
-        assert parent1.diet == parents2.diet
+        assert parent1.world == parent2.world
+        assert parent1.diet == parent2.diet
         assert parent1.__class__ == parent2.__class__
 
+        print 'new animal born!'
+
         Species = parent1.__class__
-        return Species(parent1.world, parent1.diet)
+        return Species(parent1.world)
 
     def eat(self):
         self.gain_thirst()
@@ -84,6 +95,11 @@ class Animal(object):
             self.hunger = 0
         else:
             self.hunger -= STAT_INC
+
+    def mate(self):
+        self.gain_thirst()
+        self.gain_hunger()
+        self.lose_energy
 
     def gain_hunger(self):
         self.last_eat += 1
@@ -193,30 +209,34 @@ class Animal(object):
 
         return action
 
+    def age(self):
+        return self.world.steps - self.born_on
+
+    def can_mate(self):
+        return self.age() >= MATE_AGE
+
     def determine_goal(self):
-        # TODO: how to pick goal?
-        if self.thirst > 1:
+        # Determines which goal to achieve, parameterized by its own need
+        # thresholds.
+        if self.thirst >= self.thirst_thresh and self.hunger >= self.hunger_thresh:
             if self.hunger > self.thirst:
                 return Goal.eat
             else:
                 return Goal.drink
-        elif self.hunger > 1:
+        elif self.hunger >= self.hunger_thresh:
             return Goal.eat
-        elif self.energy == 0:
+        elif self.thirst >= self.thirst_thresh:
+            return Goal.drink
+        elif self.energy <= self.energy_thresh:
             return Goal.rest
 
-        #TODO: what about mating?
+        if self.can_mate():
+            if random.random() < self.mate_chance:
+                return Goal.mate
+
         return Goal.explore
 
     def explore_action(self):
-        # TODO: think about exploration heuristics
-        #nones = 0
-        #for row in self.cells:
-        #    for c in row:
-        #        if c is None:
-        #            nones += 1
-        #print nones
-
         for neighbor in self.current_cell.get_neighbors():
             row,col = neighbor.row, neighbor.col
 
@@ -224,6 +244,25 @@ class Animal(object):
                 dir_to = Cell.direction_to(self.current_cell, neighbor)
                 if dir_to is not None:
                     return Move(dir_to)
+
+        oldest_cell = None
+        oldest_time = 0
+        for row, i in zip(self.cells, range(len(self.cells))):
+            for cell, j in zip(row, range(len(row))):
+                if cell is None:
+                    dir_to = Cell.direction_to(self.current_cell, self.world.cells[i][j])
+                    if dir_to is not None:
+                        return Move(dir_to)
+                else:
+                    cell.step_time
+                    if cell.step_time > oldest_time:
+                        oldest_time = cell.step_time
+                        oldest_cell = cell
+
+        if oldest_cell is not None:
+            dir_to = Cell.direction_to(self.current_cell, oldest_cell)
+            if dir_to is not None:
+                return Move(dir_to)
 
         return Move(Direction.random_direction())
 
@@ -244,7 +283,6 @@ class Animal(object):
         return best_cell
 
     def eat_action(self):
-        # TODO: find cell with food, and go towards there, or eat here
         local_food = self.get_eat_action()
         if local_food is not None:
             return local_food
@@ -262,7 +300,6 @@ class Animal(object):
         return self.explore_action()
 
     def drink_action(self):
-        # TODO: similar to eat
         local_drink = self.get_drink_action()
         if local_drink is not None:
             return local_drink
@@ -276,8 +313,13 @@ class Animal(object):
         return self.explore_action()
 
     def mate_action(self):
-        # TODO: think about how this should be done
-        pass
+        for animal in self.current_cell.animals:
+            if animal == self:
+                continue
+            if type(animal) == type(self) and animal.can_mate():
+                return Mate(animal)
+
+        return self.explore_action()
 
     def determine_action_by_goal(self):
         goal = self.determine_goal()
@@ -318,7 +360,7 @@ class Animal(object):
             self.move()
 
         elif type(action) == Mate:
-            pass #TODO: handle
+            self.mate()
 
         else:
             assert type(action) == Sleep
