@@ -18,7 +18,11 @@ class WorldControl:
         if self.canvas is None:
             return
 
-        self.canvas.delete('all')
+        try:
+            self.canvas.delete('all')
+        except TclError as e:
+            print 'deleting failed... not sure why'
+
         i=0
         for row in self.world.cells:
             j=0
