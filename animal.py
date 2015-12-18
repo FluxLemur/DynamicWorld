@@ -1,4 +1,4 @@
-import random
+import random, math
 from actions import *
 from resources import Resources as R
 from constance import *
@@ -9,8 +9,8 @@ class Diet:
     herbivore = [R.grass, R.fruit, R.leaves]
     carnivore = [R.fish]
 
-MAX_STAT = 11
-STAT_INC = 2
+MAX_STAT = 127
+STAT_INC = 10
 MATE_AGE = 150
 
 class DeathCause:
@@ -66,17 +66,95 @@ class Animal(object):
         # this function is the AI part of Animal
         self.determine_action = self.random_determine_action
 
+        self.thresh_scale = 6                 # 2^127 - 1 = 127
         # PARAMETERS
-        self.hunger_thresh = 1
-        self.thirst_thresh = 1
-        self.energy_thresh = 1
+        self.hunger_thresh = 50                # 1 to 127 scale
+        self.thirst_thresh = 50                # 1 to 127 scale
+        self.energy_thresh = 50                # 1 to 127 scale
         self.mate_chance   = 0.01
 
-        #self.hunger_thresh = p1 # 1
-        #self.thirst_thresh = p2 # 1
-        #self.energy_thresh = p3 # 1
-        #self.mate_chance   = p4 # 0.25
+    # convert an integer to its string binary representation
+    @staticmethod
+    def to_binary(val):
+      n = int(math.log(val, 2))
+      s = ''
+      while val > 0:
+        p = int(math.pow(2, n))
+        if val >= p:
+          s += '1'
+          val -= p
+        else:
+          s += '0'
+        n -= 1
+      for x in xrange(n + 1):
+        s += '0'
+      return s
 
+    # pad val with zeros so that it has length p
+    @staticmethod
+    def pad(val, p):
+      while len(val) < p:
+        val = '0' + val
+      return val
+
+    @staticmethod
+    def pad_binary(val, threshold_scale):
+      return Animal.pad(Animal.to_binary(val), threshold_scale)
+
+    # convert an animal to its string binary representation
+    # hunger_thresh :: thirst_thresh :: energy_thresh
+    @staticmethod
+    def to_string_rep(animal):
+      ts = animal.thresh_scale
+      rep_animal = Animal.pad_binary(animal.hunger_thresh, ts)
+      rep_animal += Animal.pad_binary(animal.thirst_thresh, ts)
+      rep_animal += Animal.pad_binary(animal.energy_thresh, ts)
+      return rep_animal
+
+    # crossover the strings rep1 and rep2 at a random index
+    @staticmethod
+    def crossover(rep1, rep2):
+      n = len(rep1)
+      c = random.randint(0, n)
+      left1 = rep1[0:c]
+      left2 = rep2[0:c]
+      right1 = rep1[c:n]
+      right2 = rep2[c:n]
+      return left1 + right2, left2 + right1
+
+    @staticmethod
+    def negate(c):
+      if c == '1':
+        return '0'
+      else:
+        return '1'
+
+    @staticmethod
+    def mutate(rep):
+      new_rep = ''
+      for x in xrange(0,len(rep)):
+        # mutate with probability 1/100
+        r = random.randint(1, 100)
+        if r == 1:    # mutate
+          new_rep += Animal.negate(rep[x])
+        else:         # don't mutate
+          new_rep += rep[x]
+      return new_rep
+
+    # convert a binary string into an integer
+    @staticmethod
+    def to_int(s):
+      n = 0
+      i = 0
+      x = len(s) - 1    # least siginificant digit
+      while x >= 0:
+        if s[x] == '1':
+          i += math.pow(2, n)
+        x -= 1
+        n += 1
+      return int(i)
+
+    # generate a new animal by crossing over and mutation parent1 and parent2
     @staticmethod
     def birth_animal(parent1, parent2):
         assert parent1.world == parent2.world
@@ -85,8 +163,28 @@ class Animal(object):
 
         print 'new animal born!'
 
+        rep_parent1 = Animal.to_string_rep(parent1)
+        rep_parent2 = Animal.to_string_rep(parent2)
+        child1, child2 = Animal.crossover(rep_parent1, rep_parent2)
+        r = random.randint(0,1)
+        child = None
+        if r == 0:
+          child = Animal.mutate(child1)
+        else:
+          child = Animal.mutate(child2)
+
         Species = parent1.__class__
-        return Species(parent1.world)
+        baby = Species(parent1.world)
+
+        ts = baby.thresh_scale
+        baby.hunger_thresh = Animal.to_int(child[0:ts])
+        baby.thirst_thresh = Animal.to_int(child[ts:2*ts])
+        baby.energy_thresh = Animal.to_int(child[2*ts:3*ts])
+        if parent1.get_name() == 'Tiger':
+          baby.mate_chance = random.randint(0,5)/100
+        else:
+          baby.mate_chance = random.randint(0,10)/100
+        return baby
 
     def eat(self):
         self.gain_thirst()
