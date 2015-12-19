@@ -1,5 +1,4 @@
 from world import World
-from terrain import Terrain
 from constance import *
 
 class WorldControl:

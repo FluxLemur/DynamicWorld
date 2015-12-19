@@ -25,13 +25,6 @@ class Goal:
     mate,    \
     rest     = range(5)
 
-class State:
-    hungry,      \
-    thirsty,     \
-    tired,       \
-    dead_hunger, \
-    dead_thirst = range(5)
-
 class Animal(object):
     n_animals = 0
 
@@ -42,8 +35,6 @@ class Animal(object):
         self.color = 'Black'
         self.uid = Animal.n_animals
         Animal.n_animals += 1
-
-        self.conditions = set()     # empty set is healthy
         self.last_step = -1         # keeps track, so as not to move an animal
                                     # twice in one time step
         self.born_on = world.steps
@@ -501,6 +492,7 @@ class Elephant(Animal):
         super(Elephant,self).__init__(world, Diet.herbivore)
         self.color = 'Purple'
         self.photo = elephant
+        #self.determine_action = self.naive_determine_action
         self.determine_action = self.determine_action_by_goal
 
 class Tiger(Animal):
@@ -509,12 +501,14 @@ class Tiger(Animal):
         self.prey = [Elephant, Giraffe]
         self.color = 'Orange'
         self.photo = tiger
+        #self.determine_action = self.naive_determine_action
         self.determine_action = self.determine_action_by_goal
 
 class Giraffe(Animal):
     def __init__(self, world):
         super(Giraffe,self).__init__(world, Diet.herbivore)
         self.color = 'Yellow'
+        #self.determine_action = self.naive_determine_action
         self.determine_action = self.determine_action_by_goal
 
 class Animals:
